@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.SocioController">
+   <children>
+      <TableView prefHeight="480.0" prefWidth="720.0">
+        <columns>
+          <TableColumn prefWidth="720.0" text="Mostrandro todos los socios" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
