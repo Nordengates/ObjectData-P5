@@ -2,7 +2,6 @@ package ObjectData_app.ObjectData_controller;
 
 import ObjectData_app.ObjectData_model.ExcursionModel;
 import ObjectData_app.ObjectData_controller.ExcursionController;
-import ObjectData_app.ObjectData_view.MensajeControllerView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -53,15 +52,13 @@ public class ExcursionController {
         int numeroDias = 0;
         double precio = 0.0;
         String respuesta = null;
-        RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR EXCURSIONES --");
 
         // Pedimos la descripcion de la excursión
         String descripcionExcursion = tfNombreExcursion.getText();
         if (descripcionExcursion.isEmpty()) {
             RespView.respuestaControllerView("Operación cancelada.");
-            // AppController.gestionExcursiones();
         }
-        // Pedimos la fecha de excursión y comprobamos el dato.
+        
         do {
             String retorno = tfFechaExcursion.getText();
             if (retorno.isEmpty()) {

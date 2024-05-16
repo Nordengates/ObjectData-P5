@@ -11,14 +11,10 @@ import ObjectData_app.ObjectData_model.FederacionModel;
 import ObjectData_app.ObjectData_model.InscripcionModel;
 import ObjectData_app.ObjectData_model.SeguroModel;
 import ObjectData_app.ObjectData_model.SeguroModel.TipoSeguro;
-import ObjectData_app.ObjectData_view.MensajeControllerView;
 //Se añaden las vistas necesarias.
 import ObjectData_app.ObjectData_controller.SocioController;
 
 public class SocioController {
-    // Se inicializan las vistas necesasias.
-    static MensajeControllerView RespView = new MensajeControllerView();
-
     // Método para generar un número de socio aleatorio
     public static int generarID() {
         Random rand = new Random();

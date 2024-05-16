@@ -3,6 +3,8 @@ package ObjectData_app.ObjectData_view;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 
+//Eventos posibles para la alerta ERROR INFORMATION WARNING CONFIRMATION
+
 public class NotificacionView {
     @FXML
     public static void Notificacion(String tipo, String titulo, String contenido) {
