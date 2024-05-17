@@ -148,7 +148,7 @@ public class ExcursionController {
         // Se llama al metodo crearExcursion del modelo ExcursionModel, se pasa tanto la instancia como el objeto creado
         try {
             respuesta = excursion.crearExcursionModel(excursion);
-            NotificacionView.Notificacion("SUCCESS", "Excursión Creada", respuesta);
+            NotificacionView.Notificacion("SUCCESS", "Excursión Creada!", respuesta);
         } catch (Exception e) {
             NotificacionView.Notificacion("ERROR", "Error", e.getMessage());
         }
