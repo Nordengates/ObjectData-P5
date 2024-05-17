@@ -11,6 +11,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import ObjectData_app.ObjectData_view.NotificacionView;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,7 +29,6 @@ import ObjectData_app.ObjectData_model.SeguroModel.TipoSeguro;
 import ObjectData_app.ObjectData_controller.SocioController;
 
 public class SocioController {
-
     @FXML
     private Text taInfo;
     @FXML
@@ -90,6 +94,24 @@ public class SocioController {
         taTodosLosSocios.getItems().addAll(socioFederadoModels);
         taTodosLosSocios.getItems().addAll(socioInfantilModels);
     }
+    //SocioEstandar: 
+
+    @FXML
+    private TextField tfNombreSocioEstandar;
+
+    @FXML
+    private TextField tfDniSocioEstandar;
+
+    @FXML
+    private ChoiceBox<String> cbTipoSeguro;
+
+    @FXML
+    private Button btCrear;
+
+    @FXML
+    public void initialize() {
+        cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
+    }
 
     // Método para generar un número de socio aleatorio
     public static int generarID() {
@@ -105,45 +127,39 @@ public class SocioController {
     }
 
     // Metodo para añadir un socio estandar
-    public static void crearSocioEstandar() {
+    @FXML
+    public void crearSocioEstandar() {
         // Atributos
-        String nombre; // El primer parametro del array sera el nombre
-        String NIF; // El segundo parametro del array es el DNI
-        int numeroSocio; // Para almacenar el numero de socio.
+        String nombre = tfNombreSocioEstandar.getText();
+        String NIF = tfDniSocioEstandar.getText();
+        String tipoSeguroSeleccionado = cbTipoSeguro.getValue();
+
+        if (nombre.isEmpty() || NIF.isEmpty() || tipoSeguroSeleccionado == null) {
+            NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, completa todos los campos.");
+            return;
+        }
+        int numeroSocio;
         boolean todoOk = false;
-        // Imprimimos el titulo de la función.
-        RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR UN SOCIO ESTANDAR --");
-        // Creamos el bucle para el metodo.
+
+        //RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR UN SOCIO ESTANDAR --");
+        
         do {
-            // Pedimos el nombre del socio.
-            nombre = SociView.obtenerNombreSocio();
-            // Si nombre esta vacio salimos.
-            if (nombre.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            }
-            // Pedimos el NIF
-            NIF = SociView.obtenerDNISocio();
-            // Si nombre esta vacio salimos.
-            if (NIF.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            }
-            // Obtenemos el numero de socio.
-            numeroSocio = Integer.parseInt("5" + generarID()); // Número de socio
-            RespView.respuestaControllerView("# Numero de socio generado: " + numeroSocio); // Mandamos el numero de
-                                                                                            // socio a la pantalla
-            // Pido el seguro
+            numeroSocio = Integer.parseInt("5" + generarID());
+
             SeguroModel seguroModel = seguroSocio();
-            // Creamos un objeto de tipo llamado socioModel con los datos correctos
+            if (seguroModel == null) {
+                NotificacionView.Notificacion("ERROR", "Tipo de Seguro Inválido", "Por favor, selecciona un tipo de seguro válido.");
+                break;
+            }
+
             SocioEstandarModel socioModel = new SocioEstandarModel(numeroSocio, nombre, NIF, seguroModel);
-            // Enviamos la información al modelo para que añada el socio a la BBDD
-            // Al intentar crear datos en un medio exteno, en este caso la BBDD, debemos
-            // usar try para comprobar posibles excepciones.
+
             try {
                 SocioEstandarModel.crearSocioEstandar(socioModel);
-                RespView.respuestaControllerView("Se ha creado el socio estandar correctamente.");
+                NotificacionView.Notificacion("INFORMATION", "Éxito", "Se ha creado el socio estándar correctamente.");
                 todoOk = true;
             } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
+                NotificacionView.Notificacion("ERROR", "Error en la Creación", "Hubo un error al crear el socio estándar: " + e.getMessage());
             }
         } while (!todoOk);
     }
@@ -508,33 +524,21 @@ public class SocioController {
         // Volvemos al menu principal de la gestión de los socios.
     }
 
-    // Metodo para seleccionar el seguro de un socio estandar.
-    public static SeguroModel seguroSocio() {
-        // Tratamiento del seguro
-        TipoSeguro tipoSeguro = null;
-        boolean comprobarTipoSeguro = false;
-        // Excepciones de tipo de seguro
-        do {
-            // Se piden los datos del seguro mediante la vista seleccionarSeguroView
-            String retornoSeguro = SociView.seleccionarSeguroView();
-            // Se hace el tratamiento de los datos retornados desde la vista.
-            if (retornoSeguro.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-                break;
-            } else if (retornoSeguro.equals("1")) {
-                tipoSeguro = TipoSeguro.BASICO;
-                comprobarTipoSeguro = true;
-            } else if (retornoSeguro.equals("2")) {
-                tipoSeguro = TipoSeguro.COMPLETO;
-                comprobarTipoSeguro = true;
-            } else {
-                RespView.excepcionesControllerView("No se ha podido comprobar el tipo de seguro.");
-                continue;
-            }
-        } while (!comprobarTipoSeguro);
-        // Genero el objeto de tipo seguro
-        SeguroModel seguro = new SeguroModel(tipoSeguro);
-        // Retorno el seguro
-        return seguro;
-    }
+   // Metodo para seleccionar el seguro de un socio estandar.
+   @FXML
+   private SeguroModel seguroSocio() {
+       // Tratamiento del seguro
+       TipoSeguro tipoSeguro = null;
+       String retornoSeguro = cbTipoSeguro.getValue();
+
+       if (retornoSeguro.startsWith("1")) {
+           tipoSeguro = TipoSeguro.BASICO;
+       } else if (retornoSeguro.startsWith("2")) {
+           tipoSeguro = TipoSeguro.COMPLETO;
+       } else {
+           return null;
+       }
+
+       return new SeguroModel(tipoSeguro);
+   }
 }
