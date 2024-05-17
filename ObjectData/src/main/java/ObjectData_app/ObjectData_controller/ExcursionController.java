@@ -14,6 +14,8 @@ import javafx.scene.control.TextField;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Random;
 
@@ -67,6 +69,7 @@ public class ExcursionController {
     // se inicializó al arranque de APP en main)
     @FXML
     public void crearExcursion() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         boolean comprobadoOk = false;
         Date fecha = null;
         int numeroDias = 0;
@@ -93,7 +96,7 @@ public class ExcursionController {
             if (retorno.isEmpty()) {
                 NotificacionView.Notificacion("WARNING", "Fecha Vacía", "La fecha de la excursión no puede estar vacía.");
                 return;
-            } else if (!retorno.matches("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}$")) {
+            } else if (!retorno.matches("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$")) {
                 NotificacionView.Notificacion("WARNING", "Formato Incorrecto", "El formato de la fecha debe ser yyyy/MM/dd HH:mm.");
                 return;
             }
@@ -101,7 +104,7 @@ public class ExcursionController {
                 fecha = sdf.parse(retorno);
                 comprobadoOk = true;
             } catch (ParseException e) {
-                NotificacionView.Notificacion("ERROR", "Fecha Incorrecta", "Error al parsear la fecha: " + e.getMessage());
+                NotificacionView.Notificacion("INFORMATION", "Fecha Incorrecta", "Error al parsear la fecha: " + e.getMessage()); // Cambio aquí
                 return;
             }
         } while (!comprobadoOk);
@@ -151,34 +154,32 @@ public class ExcursionController {
         }
     }
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
     @FXML
     private void buscarExcursiones() {
-        String fechaInicioStr = tfFechaInicioExcursion.getText().trim();
-        String fechaFinStr = tfFechaFinExcursion.getText().trim();
-
+        LocalDate fechaInicioSeleccionada = tfFechaInicioExcursion.getValue();
+        LocalDate fechaFinSeleccionada = tfFechaFinExcursion.getValue();
+    
         // Se comprueba si el usuario quiere salir
-        if (fechaInicioStr.isEmpty() || fechaFinStr.isEmpty()) {
+        if (fechaInicioSeleccionada == null || fechaFinSeleccionada == null) {
             taResultadoExcursion.setText("Operación cancelada.");
             return;
         }
-
+    
         // Se intenta transformar las fechas y se muestran los resultados.
         try {
-            Date fechaInicio = sdf.parse(fechaInicioStr);
-            Date fechaFin = sdf.parse(fechaFinStr);
-
+            Date fechaInicio = Date.from(fechaInicioSeleccionada.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date fechaFin = Date.from(fechaFinSeleccionada.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    
             // Verificación adicional para fechas válidas
             if (fechaInicio.after(fechaFin)) {
                 taResultadoExcursion.setText("La fecha de inicio no puede ser posterior a la fecha de fin.");
                 return;
             }
-
+    
             String respuesta = ExcursionModel.mostrarExcursiones(fechaInicio, fechaFin);
             taResultadoExcursion.setText(respuesta);
-        } catch (ParseException e) {
-            taResultadoExcursion.setText("Formato de fecha incorrecto. Debe ser yyyy/MM/dd");
+        } catch (Exception e) {
+            taResultadoExcursion.setText("Error al procesar las fechas: " + e.getMessage());
         }
     }
 }
