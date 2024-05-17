@@ -5,10 +5,15 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="taListadoMostrarExcursiones" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.ExcursionController">
    <children>
+      <!-- Rectángulo semi-transparente para el efecto de recuadro -->
+      <Rectangle width="720.0" height="480.0" fill="#FFFFFF88" /> <!-- El valor '88' en el color representa la opacidad del 50% (88 en hexadecimal) -->
+
       <Label fx:id="label1" alignment="CENTER" contentDisplay="CENTER" layoutX="-17.0" layoutY="25.0" prefHeight="78.0" prefWidth="398.0" text="Ingrese la fecha de inicio:" textOverrun="CLIP" wrapText="true">
          <font>
             <Font name="System Bold" size="13.0" />
