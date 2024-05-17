@@ -4,8 +4,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioFederadoHib;
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioInfantilHib;
+import javafx.beans.value.ObservableValue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SocioInfantilModel extends SocioModel {
@@ -73,37 +76,37 @@ public class SocioInfantilModel extends SocioModel {
         }
     }
 
-    // Método para listar todos los socios infantiles, ajustado para devolver un
-    // array de String
-    public static String[] listarSocios(int valorInicialContador) {
+    // Metodo para obtener la lista los socios infantiles.
+    public static ArrayList<SocioInfantilModel> obtenerSocios() {
         // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
-        List<SocioInfantilHib> socios = null;
+        // Alamacenamos los objetos devuelvos por la base de datos que son de tipo Hib
+        List<SocioInfantilHib> sociosInfantilesHib = null;
+        // Almacenamos los objetos transformados de Hub a Model.
+        ArrayList<SocioInfantilModel> socioInfantilModel = new ArrayList<>();
         try {
+            // Iniciamos una transacción en la sesión
             session.beginTransaction();
-            socios = session.createQuery("FROM SocioInfantilHib", SocioInfantilHib.class).list();
+            sociosInfantilesHib = session.createQuery("FROM SocioInfantilHib", SocioInfantilHib.class).list();
         } catch (Exception e) {
-            // Devolvemos el error aguas arriba en las clases
-            throw e;
+            throw e; // Captura el mensaje de error del DAO y lo envia aguas arriba.
         } finally {
             // Finalmente cerramos la sesión y el objeto de fábrica de sesiones
             session.close();
             // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
             sessionFactory.close();
         }
-        // Comprobar en la lista de socios
-        StringBuilder listado = new StringBuilder();
-        int contador = valorInicialContador;
-        for (SocioInfantilHib socio : socios) {
-            contador++;
-            listado.append("\n- ").append(contador).append(". Numero Socio: ").append(socio.getNumeroSocio())
-                    .append(" | Nombre: ").append(socio.getNombre()).append(" | Numero socio parental: ")
-                    .append(socio.getNumeroSocioTutorLegal());
+        //Pasamos los datos de sociosInfantilesHib a socioInfantilModel
+        for (SocioInfantilHib socio : sociosInfantilesHib) {
+            socioInfantilModel.add(
+                new SocioInfantilModel(
+                    socio.getNumeroSocio(),
+                    socio.getNombre(),
+                    socio.getNumeroSocioTutorLegal()
+            ));
         }
-        if (contador == valorInicialContador) {
-            listado.append("\n  - Sin datos de socios Infantiles.");
-        }
-        return new String[] { listado.toString(), String.valueOf(contador) };
+        //Devolvemos los objetos de tipo socioInfantilModel al controlador
+        return socioInfantilModel;
     }
 
     // Método para obtener un socio infantil por su número de socio

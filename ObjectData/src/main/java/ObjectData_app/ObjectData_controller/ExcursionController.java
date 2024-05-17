@@ -8,7 +8,6 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -168,7 +167,7 @@ public class ExcursionController {
         taFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         taPrecio.setCellValueFactory(new PropertyValueFactory<>("precioInscripcion"));
         taNumDias.setCellValueFactory(new PropertyValueFactory<>("numeroDias"));
-        
+
         taResultadoExcursion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 Integer contenidoCelda = newSelection.getNumeroExcursion();

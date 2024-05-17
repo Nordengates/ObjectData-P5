@@ -6,9 +6,11 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.SocioController">
    <children>
-      <TableView prefHeight="480.0" prefWidth="720.0">
+      <TableView fx:id="taTodosLosSocios" prefHeight="480.0" prefWidth="720.0">
         <columns>
-          <TableColumn prefWidth="720.0" text="Mostrandro todos los socios" />
+          <TableColumn fx:id="taNumeroSocio" prefWidth="157.0" text="Número socio" />
+          <TableColumn fx:id="taNombre" prefWidth="381.0" text="Nombre" />
+          <TableColumn fx:id="taTipoSocio" prefWidth="181.0" text="Tipo de socio" />
         </columns>
       </TableView>
    </children>

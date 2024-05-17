@@ -4,9 +4,18 @@ import ObjectData_app.ObjectData_model.SocioEstandarModel;
 import ObjectData_app.ObjectData_model.SocioFederadoModel;
 import ObjectData_app.ObjectData_model.SocioInfantilModel;
 import ObjectData_app.ObjectData_model.SocioModel;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import ObjectData_app.ObjectData_model.ExcursionModel;
 import ObjectData_app.ObjectData_model.FederacionModel;
 import ObjectData_app.ObjectData_model.InscripcionModel;
 import ObjectData_app.ObjectData_model.SeguroModel;
@@ -15,6 +24,73 @@ import ObjectData_app.ObjectData_model.SeguroModel.TipoSeguro;
 import ObjectData_app.ObjectData_controller.SocioController;
 
 public class SocioController {
+
+    @FXML
+    private Text taInfo;
+    @FXML
+    private TableView<Object> taTodosLosSocios;
+    @FXML
+    private TableColumn<Object, Integer> taNumeroSocio;
+    @FXML
+    private TableColumn<Object, String> taNombre;
+    @FXML
+    private TableColumn<Object, String> taTipoSocio;
+
+    public void mostrarTodosLosSocios() {
+        //Iniciamos la tabla
+        taNumeroSocio.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof SocioEstandarModel) {
+                SocioEstandarModel socio = (SocioEstandarModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            } else if (item instanceof SocioFederadoModel) {
+                SocioFederadoModel socio = (SocioFederadoModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            } else if (item instanceof SocioInfantilModel) {
+                SocioInfantilModel socio = (SocioInfantilModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            }
+            return null;
+        });
+
+        taNombre.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof SocioEstandarModel) {
+                SocioEstandarModel socio = (SocioEstandarModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            } else if (item instanceof SocioFederadoModel) {
+                SocioFederadoModel socio = (SocioFederadoModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            } else if (item instanceof SocioInfantilModel) {
+                SocioInfantilModel socio = (SocioInfantilModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            }
+            return null;
+        });
+
+        taTipoSocio.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof SocioEstandarModel) {
+                return new SimpleStringProperty("Estandar");
+            } else if (item instanceof SocioFederadoModel) {
+                return new SimpleStringProperty("Federado");
+            } else if (item instanceof SocioInfantilModel) {
+                return new SimpleStringProperty("Infantil");
+            }
+            return null;
+        });
+
+        //Obtenemos los objetos de los socios
+        ArrayList<SocioEstandarModel> socioEstandarModels = SocioEstandarModel.obtenerSocios();
+        ArrayList<SocioFederadoModel> socioFederadoModels = SocioFederadoModel.obtenerSocios();
+        ArrayList<SocioInfantilModel> socioInfantilModels = SocioInfantilModel.obtenerSocios();
+
+        //Añadimos los socios a la tabla
+        taTodosLosSocios.getItems().addAll(socioEstandarModels);
+        taTodosLosSocios.getItems().addAll(socioFederadoModels);
+        taTodosLosSocios.getItems().addAll(socioInfantilModels);
+    }
+
     // Método para generar un número de socio aleatorio
     public static int generarID() {
         Random rand = new Random();
@@ -26,43 +102,6 @@ public class SocioController {
             return id * -1;
         }
         return id;
-    }
-
-    // Metodo para elegir el tipo de socio a crear
-    public static void crearNuevoSocio() {
-        // Excepcion para la conversion del numero de tipo String a Int
-        int opcion = 0;
-        boolean opcionValida = false;
-        do {
-            String retorno = SociView.crearNuevoSocioView();
-            if (retorno.matches("\\d+")) {
-                opcion = Integer.parseInt(retorno);
-            } else {
-                RespView.excepcionesControllerView("Debe insertar un valor numerico valido.");
-                continue;
-            }
-
-            if (opcion >= 1 && opcion <= 4) {
-                opcionValida = true;
-            } else {
-                RespView.excepcionesControllerView("Debe seleccionar una opción valida.");
-            }
-
-        } while (!opcionValida);
-        // Se carga el formulario de registro de un nuevo socio.
-        switch (opcion) {
-            case 1:
-                crearSocioEstandar();
-                break;
-            case 2:
-                crearSocioFederado();
-                break;
-            case 3:
-                crearSocioInfantil();
-                break;
-            case 4:
-            default:
-        }
     }
 
     // Metodo para añadir un socio estandar
@@ -350,55 +389,6 @@ public class SocioController {
             }
         } else {
             RespView.excepcionesControllerView("No se ha podido identificar el tipo de socio.");
-        }
-    }
-
-    public static void mostrarSocio() {
-        // Excepcion para la conversion del numero de tipo String a Int y opcion
-        // seleccionada valida
-        int opcion = 0;
-        boolean opcionValida = false;
-        do {
-            String retorno = SociView.listadoSociosView();
-            // Verifica si el retorno es un número entero
-            if (retorno.matches("\\d+")) {
-                opcion = Integer.parseInt(retorno);
-            } else {
-                // Si no es un número entero, muestra un mensaje de error
-                RespView.excepcionesControllerView("Debe insertar un valor numerico valido.");
-                continue;
-            }
-            if (opcion >= 1 && opcion <= 5) {
-                opcionValida = true;
-            } else {
-                RespView.excepcionesControllerView("Debe seleccionar una opción valida.");
-            }
-        } while (!opcionValida);
-        // Se listan los socios.
-        try {
-            switch (opcion) {
-                case 1:
-                    RespView.respuestaControllerView(
-                            "Listado de todos los socios: " + SocioModel.listarSocios()[0]);
-                    break;
-                case 2:
-                    RespView.respuestaControllerView(
-                            "\nListado de socios estandar: " + SocioEstandarModel.listarSocios(0)[0]);
-                    break;
-                case 3:
-                    RespView.respuestaControllerView(
-                            "\nListado de socios federados: " + SocioFederadoModel.listarSocios(0)[0]);
-                    break;
-                case 4:
-                    RespView.respuestaControllerView(
-                            "\nListado de socios infantiles: " + SocioInfantilModel.listarSocios(0)[0]);
-                    break;
-                case 5:
-                    break;
-                default:
-            }
-        } catch (Exception e) {
-            RespView.excepcionesControllerView(e.getMessage());
         }
     }
 

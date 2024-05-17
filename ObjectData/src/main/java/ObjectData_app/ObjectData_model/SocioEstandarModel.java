@@ -2,7 +2,7 @@ package ObjectData_app.ObjectData_model;
 
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.socioEstandarHib;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -175,14 +175,17 @@ public class SocioEstandarModel extends SocioModel {
     }
 
     // Metodo paras listar los socios estandar.
-    public static String[] listarSocios(int valorInicialContador) {
+    public static ArrayList<SocioEstandarModel> obtenerSocios() {
         // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
-        List<socioEstandarHib> sociosEstandar = null;
+        // Alamacenamos los objetos devuelvos por la base de datos que son de tipo Hib
+        List<socioEstandarHib> sociosEstandarHib = null;
+        // Almacenamos los objetos transformados de Hub a Model.
+        ArrayList<SocioEstandarModel> sociosEstandarModel = new ArrayList<>();
         try {
             // Iniciamos una transacción en la sesión
             session.beginTransaction();
-            sociosEstandar = session.createQuery("FROM socioEstandarHib", socioEstandarHib.class).list();
+            sociosEstandarHib = session.createQuery("FROM socioEstandarHib", socioEstandarHib.class).list();
         } catch (Exception e) {
             // Devolvemos el error aguas arriba en las clases
             throw e;
@@ -192,19 +195,17 @@ public class SocioEstandarModel extends SocioModel {
             // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
             sessionFactory.close();
         }
-        // Comprobar en la lista de socios estándar
-        StringBuilder listado = new StringBuilder();
-        int contador = valorInicialContador;
-        for (socioEstandarHib socio : sociosEstandar) {
-            contador++;
-            listado.append("\n- ").append(contador).append(". Numero Socio: ").append(socio.getNumeroSocio())
-                    .append(" | Nombre: ").append(socio.getNombre()).append(" | NIF: ").append(socio.getNIF())
-                    .append(" | Seguro: ").append(socio.getSeguro());
+        //Pasamos los datos de sociosEstandarHib a sociosEstandarModel
+        for (socioEstandarHib socio : sociosEstandarHib) {
+            sociosEstandarModel.add( new SocioEstandarModel(
+                socio.getNumeroSocio(),
+                socio.getNombre(),
+                socio.getNIF(),
+                new SeguroModel(SeguroModel.TipoSeguro.valueOf(socio.getSeguro()))
+            ));
         }
-        if (contador == 0) {
-            listado.append("\n  - Sin datos de socios Estandar.");
-        }
-        return new String[] { listado.toString(), String.valueOf(contador) };
+        //Devolvemos los objetos de tipo SocioEstandarModel al controlador
+        return sociosEstandarModel;
     }
 
     /////////////////// Getters y Setters
@@ -231,5 +232,6 @@ public class SocioEstandarModel extends SocioModel {
                 ", seguro=" + seguro +
                 '}';
     }
+
 
 }

@@ -1,5 +1,6 @@
 package ObjectData_app.ObjectData_model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -7,6 +8,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioFederadoHib;
+import ObjectData_app.ObjectData_model.ObjectData_Hibernate.socioEstandarHib;
+import javafx.beans.value.ObservableValue;
 
 public class SocioFederadoModel extends SocioModel {
     // Propiedades de la sesion.
@@ -105,36 +108,48 @@ public class SocioFederadoModel extends SocioModel {
             sessionFactory.close();
         }
         if (socio != null) {
-            return new SocioFederadoModel(socio.getNumeroSocio(), socio.getNombre(), socio.getNIF(),
-                    socio.getFederacion());
+            return new SocioFederadoModel(
+                socio.getNumeroSocio(),
+                socio.getNombre(),
+                socio.getNIF(),
+                socio.getFederacion());
         } else {
             return null;
         }
     }
 
-    // Metodo para listar los socios federados.
-    public static String[] listarSocios(int valorInicialContador) {
+    // Metodo para obtener la lista los socios federados.
+    public static ArrayList<SocioFederadoModel> obtenerSocios() {
+        // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
-        List<SocioFederadoHib> sociosFederados = null;
+        // Alamacenamos los objetos devuelvos por la base de datos que son de tipo Hib
+        List<SocioFederadoHib> sociosFederadosHib = null;
+        // Almacenamos los objetos transformados de Hub a Model.
+        ArrayList<SocioFederadoModel> sociosFederadosModel = new ArrayList<>();
         try {
+            // Iniciamos una transacción en la sesión
             session.beginTransaction();
-            sociosFederados = session.createQuery("FROM SocioFederadoHib", SocioFederadoHib.class).list();
+            sociosFederadosHib = session.createQuery("FROM SocioFederadoHib", SocioFederadoHib.class).list();
         } catch (Exception e) {
             throw e; // Captura el mensaje de error del DAO y lo envia aguas arriba.
+        } finally {
+            // Finalmente cerramos la sesión y el objeto de fábrica de sesiones
+            session.close();
+            // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
+            sessionFactory.close();
         }
-        // Atributos.
-        StringBuilder listado = new StringBuilder();        
-        int contador = valorInicialContador;
-        for (SocioFederadoHib socio : sociosFederados) {
-            contador++;
-            listado.append("\n- ").append(contador).append(". Numero Socio: ").append(socio.getNumeroSocio())
-                    .append(" | Nombre: ").append(socio.getNombre()).append(" | NIF: ").append(socio.getNIF())
-                    .append(" | Codigo Federación: ").append(socio.getFederacion());
+        //Pasamos los datos de sociosFederadosHib a sociosFederadosModel
+        for (SocioFederadoHib socio : sociosFederadosHib) {
+            sociosFederadosModel.add(
+                new SocioFederadoModel(
+                    socio.getNumeroSocio(),
+                    socio.getNombre(),
+                    socio.getNIF(),
+                    socio.getFederacion()
+            ));
         }
-        if (contador == 0) {
-            listado.append("\n  - Sin datos de socios Federados.");
-        }
-        return new String[] { listado.toString(), String.valueOf(contador) };
+        //Devolvemos los objetos de tipo sociosFederadosModel al controlador
+        return sociosFederadosModel;
     }
 
     // Método para eliminar socio infantil de la base de datos
@@ -162,4 +177,5 @@ public class SocioFederadoModel extends SocioModel {
             sessionFactory.close();
         }
     }
+
 }
