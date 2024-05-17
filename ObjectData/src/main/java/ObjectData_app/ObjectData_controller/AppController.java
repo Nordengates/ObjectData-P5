@@ -122,11 +122,6 @@ public class AppController {
     }
 
     @FXML
-    public void eliminarExcursionFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/ExcursionView/eliminarExcursionFXMLLoader.fxml");
-    }
-
-    @FXML
     public void mostrarExcursionFechaFXMLLoader() {
         FXMLLoader("/ObjectData_app/ObjectData_view/ExcursionView/mostrarExcursionFechaFXMLLoader.fxml");
     }

@@ -1,42 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="taListadoMostrarExcursiones" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.ExcursionController">
+<AnchorPane fx:id="taListadoMostrarExcursiones" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" style="-fx-background-color: #F4F6F7bb; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.ExcursionController">
    <children>
-      <!-- Rectángulo semi-transparente para el efecto de recuadro -->
-      <Rectangle width="720.0" height="480.0" fill="#FFFFFF88" /> <!-- El valor '88' en el color representa la opacidad del 50% (88 en hexadecimal) -->
-
-      <Label fx:id="label1" alignment="CENTER" contentDisplay="CENTER" layoutX="-17.0" layoutY="25.0" prefHeight="78.0" prefWidth="398.0" text="Ingrese la fecha de inicio:" textOverrun="CLIP" wrapText="true">
+      <Label fx:id="label1" alignment="CENTER" contentDisplay="CENTER" layoutX="105.0" layoutY="25.0" prefHeight="25.0" prefWidth="192.0" text="Ingrese la fecha de inicio:" textOverrun="CLIP" wrapText="true">
          <font>
-            <Font name="System Bold" size="13.0" />
+            <Font size="17.0" />
          </font>
       </Label>
-      <Label fx:id="label11" alignment="CENTER" contentDisplay="CENTER" layoutX="-63.0" layoutY="50.0" prefHeight="78.0" prefWidth="398.0" text="yyyy-MM-dd " textOverrun="CLIP" wrapText="true">
+      <Label fx:id="label12" alignment="CENTER" contentDisplay="CENTER" layoutX="305.0" layoutY="21.0" prefHeight="32.0" prefWidth="200.0" text="Ingrese la fecha de fin:" textOverrun="CLIP" wrapText="true">
          <font>
-            <Font name="System Bold" size="10.0" />
+            <Font size="16.0" />
          </font>
       </Label>
-      <TextField fx:id="tfFechaInicioExcursion" layoutX="101.0" layoutY="103.0" prefHeight="25.0" prefWidth="258.0" />
-      <Label fx:id="label12" alignment="CENTER" contentDisplay="CENTER" layoutX="-17.0" layoutY="105.0" prefHeight="78.0" prefWidth="398.0" text="Ingrese la fecha de fin:" textOverrun="CLIP" wrapText="true">
+      <DatePicker fx:id="tfFechaInicioExcursion" layoutX="114.0" layoutY="51.0" />
+      <DatePicker fx:id="tfFechaFinExcursion" layoutX="318.0" layoutY="51.0" />
+      <Button fx:id="bnBuscarMostrarExcursion" layoutX="549.0" layoutY="34.0" mnemonicParsing="false" onAction="#buscarExcursiones" prefHeight="25.0" prefWidth="100.0" text="Buscar">
          <font>
-            <Font name="System Bold" size="13.0" />
-         </font>
-      </Label>
-      <Label fx:id="label111" alignment="CENTER" contentDisplay="CENTER" layoutX="-63.0" layoutY="124.0" prefHeight="78.0" prefWidth="398.0" text="yyyy-MM-dd " textOverrun="CLIP" wrapText="true">
+            <Font size="16.0" />
+         </font></Button>
+      <TextArea fx:id="taResultadoExcursion" layoutX="11.0" layoutY="86.0" prefHeight="380.0" prefWidth="699.0">
          <font>
-            <Font name="System Bold" size="10.0" />
-         </font>
-      </Label>
-      <TextField fx:id="tfFechaFinExcursion" layoutX="101.0" layoutY="180.0" prefHeight="25.0" prefWidth="258.0" />
-      <Button fx:id="bnBuscarMostrarExcursion" layoutX="546.0" layoutY="440.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar" onAction="#buscarExcursiones" />
-      <TextArea fx:id="taResultadoExcursion" layoutX="101.0" layoutY="213.0" prefHeight="210.0" prefWidth="547.0" />
+            <Font size="16.0" />
+         </font></TextArea>
    </children>
 </AnchorPane>

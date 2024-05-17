@@ -52,7 +52,6 @@
             <Menu id="mnu_excursion" mnemonicParsing="false" text="Gestión Excursiones">
                <items>
                   <MenuItem id="nuevaExcursion" fx:id="mnu_nuevaExcursion" mnemonicParsing="false" onAction="#nuevaExcursionFXMLLoader" text="Nueva ..." />
-                  <MenuItem id="eliminarExcursion" fx:id="mnu_eliminarExcursion" mnemonicParsing="false" onAction="#eliminarExcursionFXMLLoader" text="Eliminar excursión" />
                   <MenuItem id="mostrarExcursion" fx:id="mnu_mostrarExcursion" mnemonicParsing="false" onAction="#mostrarExcursionFechaFXMLLoader" text="Mostrar excursiones por fecha" />
                </items>
             </Menu>
@@ -67,7 +66,7 @@
          <items>
             <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
               <items>
-                <AnchorPane fx:id="menuformulario" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: #09f; -fx-background-image: url('/image2.jpg'); -fx-background-size: cover;"/>
+                <AnchorPane fx:id="menuformulario" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" style="-fx-background-color: #09f; -fx-background-image: url('/background.jpg'); -fx-background-size: cover;"/>
               </items>
             </SplitPane>
          </items>

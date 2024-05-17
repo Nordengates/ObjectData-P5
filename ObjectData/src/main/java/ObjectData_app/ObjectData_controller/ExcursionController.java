@@ -7,6 +7,7 @@ import ObjectData_app.ObjectData_view.NotificacionView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -34,9 +35,9 @@ public class ExcursionController {
 
      //MostrarExcursion
     @FXML
-    TextField tfFechaInicioExcursion;
+    DatePicker tfFechaInicioExcursion;
     @FXML
-    TextField tfFechaFinExcursion;
+    DatePicker tfFechaFinExcursion;
 
     @FXML
     TextArea taResultadoExcursion;
