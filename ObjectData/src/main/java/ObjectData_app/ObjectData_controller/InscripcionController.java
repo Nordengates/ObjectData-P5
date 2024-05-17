@@ -193,10 +193,10 @@ public class InscripcionController {
         if (retorno != null && retorno.length == 2) {
             String fechaInicio = retorno[0];
             String fechaFin = retorno[1];
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             Date fechaI = null, fechaF = null;
-            if (!fechaInicio.matches("\\d{4}-\\d{2}-\\d{2}") || !fechaFin.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                RespView.excepcionesControllerView("Formato de fecha inválido. Se esperaba yyyy-MM-dd.");
+            if (!fechaInicio.matches("\\d{4}/\\d{2}/\\d{2}") || !fechaFin.matches("\\d{4}/\\d{2}/\\d{2}")) {
+                RespView.excepcionesControllerView("Formato de fecha inválido. Se esperaba yyyy/MM/dd.");
             } else {
                 try { // Parsear las fechas de inicio y fin
                     fechaI = sdf.parse(fechaInicio);

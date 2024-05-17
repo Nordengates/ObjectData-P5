@@ -93,8 +93,8 @@ public class ExcursionController {
             if (retorno.isEmpty()) {
                 NotificacionView.Notificacion("WARNING", "Fecha Vacía", "La fecha de la excursión no puede estar vacía.");
                 return;
-            } else if (!retorno.matches("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$")) {
-                NotificacionView.Notificacion("WARNING", "Formato Incorrecto", "El formato de la fecha debe ser yyyy-MM-dd HH:mm.");
+            } else if (!retorno.matches("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}$")) {
+                NotificacionView.Notificacion("WARNING", "Formato Incorrecto", "El formato de la fecha debe ser yyyy/MM/dd HH:mm.");
                 return;
             }
             try {
@@ -151,7 +151,7 @@ public class ExcursionController {
         }
     }
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
     @FXML
     private void buscarExcursiones() {
@@ -178,7 +178,7 @@ public class ExcursionController {
             String respuesta = ExcursionModel.mostrarExcursiones(fechaInicio, fechaFin);
             taResultadoExcursion.setText(respuesta);
         } catch (ParseException e) {
-            taResultadoExcursion.setText("Formato de fecha incorrecto. Debe ser yyyy-MM-dd");
+            taResultadoExcursion.setText("Formato de fecha incorrecto. Debe ser yyyy/MM/dd");
         }
     }
 }
