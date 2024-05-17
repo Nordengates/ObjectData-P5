@@ -8,8 +8,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import java.io.IOException;
 
-import ObjectData_app.ObjectData_model.SocioModel;
-
 public class AppController {
 
     @FXML
