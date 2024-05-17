@@ -95,7 +95,7 @@ public class ExcursionController {
             }
             fecha = sdf.parse(retorno);
         } catch (ParseException e) {
-            NotificacionView.Notificacion("INFORMATION", "Fecha Incorrecta",
+            NotificacionView.Notificacion("WARNING", "Fecha Incorrecta",
                     "Error al parsear la fecha: " + e.getMessage());
             return;
         }
