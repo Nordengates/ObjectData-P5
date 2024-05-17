@@ -5,6 +5,7 @@ module ObjectData_app {
     requires org.hibernate.orm.core;
     requires jakarta.persistence;
     requires javafx.graphics;
+    requires java.desktop;
     exports ObjectData_app.ObjectData_controller;
     exports ObjectData_app.ObjectData_model;
     opens ObjectData_app.ObjectData_controller to javafx.fxml;

@@ -3,31 +3,44 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="taListadoMostrarExcursiones" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" style="-fx-background-color: #F4F6F7dd; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.ExcursionController">
    <children>
-      <Label fx:id="label1" alignment="CENTER" contentDisplay="CENTER" layoutX="105.0" layoutY="25.0" prefHeight="25.0" prefWidth="192.0" text="Ingrese la fecha de inicio:" textOverrun="CLIP" wrapText="true">
+      <Text layoutX="174.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="BUSCADOR DE EXCURSIONES POR FECHA" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
+      <Label fx:id="label1" alignment="CENTER" contentDisplay="CENTER" layoutX="105.0" layoutY="62.0" prefHeight="25.0" prefWidth="192.0" text="Ingrese la fecha de inicio:" textOverrun="CLIP" wrapText="true">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <Label fx:id="label12" alignment="CENTER" contentDisplay="CENTER" layoutX="305.0" layoutY="21.0" prefHeight="32.0" prefWidth="200.0" text="Ingrese la fecha de fin:" textOverrun="CLIP" wrapText="true">
+      <Label fx:id="label12" alignment="CENTER" contentDisplay="CENTER" layoutX="305.0" layoutY="58.0" prefHeight="32.0" prefWidth="200.0" text="Ingrese la fecha de fin:" textOverrun="CLIP" wrapText="true">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <DatePicker fx:id="tfFechaInicioExcursion" layoutX="114.0" layoutY="51.0" />
-      <DatePicker fx:id="tfFechaFinExcursion" layoutX="318.0" layoutY="51.0" />
-      <Button fx:id="bnBuscarMostrarExcursion" layoutX="549.0" layoutY="34.0" mnemonicParsing="false" onAction="#buscarExcursiones" prefHeight="25.0" prefWidth="100.0" text="Buscar">
+      <DatePicker fx:id="tfFechaInicioExcursion" layoutX="114.0" layoutY="88.0" />
+      <DatePicker fx:id="tfFechaFinExcursion" layoutX="318.0" layoutY="88.0" />
+      <Text fx:id="tInfo" fill="RED" layoutX="508.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="181.13671875" />
+      <Button fx:id="bnBuscarMostrarExcursion" layoutX="549.0" layoutY="71.0" mnemonicParsing="false" onAction="#buscarExcursiones" prefHeight="25.0" prefWidth="100.0" text="Buscar">
          <font>
             <Font size="13.0" />
          </font></Button>
-      <TextArea fx:id="taResultadoExcursion" layoutX="11.0" layoutY="86.0" prefHeight="380.0" prefWidth="699.0">
-         <font>
-            <Font size="16.0" />
-         </font></TextArea>
+      <TableView fx:id="taResultadoExcursion" layoutX="7.0" layoutY="130.0" prefHeight="342.0" prefWidth="707.0">
+         <columns>
+            <TableColumn fx:id="taNumeroExcursion" prefWidth="100.0" text="Núm excursión" />
+            <TableColumn fx:id="taDescripcion" prefWidth="285.0" text="Descripción de la excursión" />
+            <TableColumn fx:id="taFecha" prefWidth="172.0" text="Fecha" />
+            <TableColumn fx:id="taPrecio" minWidth="0.0" prefWidth="64.0" text="Precio" />
+            <TableColumn fx:id="taNumDias" prefWidth="85.0" text="Núm de dias" />
+         </columns>
+      </TableView>
    </children>
 </AnchorPane>

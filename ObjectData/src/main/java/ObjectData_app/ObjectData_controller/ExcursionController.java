@@ -1,185 +1,184 @@
 package ObjectData_app.ObjectData_controller;
 
 import ObjectData_app.ObjectData_model.ExcursionModel;
-import ObjectData_app.ObjectData_controller.ExcursionController;
-import ObjectData_app.ObjectData_view.MensajeControllerView;
 import ObjectData_app.ObjectData_view.NotificacionView;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.text.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
-import org.hibernate.mapping.List;
-
 public class ExcursionController {
-    //Crear excursion
     @FXML
-    TextField tfNombreExcursion;
+    private TextField tfNombreExcursion;
     @FXML
-    TextField tfFechaExcursion;
+    private DatePicker tfFecha;
     @FXML
-    TextField tfNumDias;
+    private TextField tfHora;
     @FXML
-    TextField tfPrecioInscripcion;
+    private TextField tfNumDias;
+    @FXML
+    private TextField tfPrecioInscripcion;
+    @FXML
+    private Button btCrear;
 
     @FXML
-    Button btCrear;
-
-     //MostrarExcursion
+    private DatePicker tfFechaInicioExcursion;
     @FXML
-    DatePicker tfFechaInicioExcursion;
+    private DatePicker tfFechaFinExcursion;
     @FXML
-    DatePicker tfFechaFinExcursion;
-
+    private Text tInfo;
     @FXML
-    TextArea taResultadoExcursion;
-
+    private TableView<ExcursionModel> taResultadoExcursion;
     @FXML
-    Button bnBuscarMostrarExcursion;
+    private TableColumn<ExcursionModel, Integer> taNumeroExcursion;
+    @FXML
+    private TableColumn<ExcursionModel, String> taDescripcion;
+    @FXML
+    private TableColumn<ExcursionModel, Date> taFecha;
+    @FXML
+    private TableColumn<ExcursionModel, Double> taPrecio;
+    @FXML
+    private TableColumn<ExcursionModel, Integer> taNumDias;
+    @FXML
+    private Button bnBuscarMostrarExcursion;
 
-
-
-   
-    // Se inicializan las vistas necasias.
-
-    // Metodo para crear una ID ramdon de 8 digitos
+    // Método para crear una ID aleatoria de 8 dígitos
     public static int generarID() {
         Random rand = new Random();
         int id = 0;
         for (int i = 0; i < 8; i++) {
-            id = id * 10 + rand.nextInt(9) + 1;
-        }
-        if (id < 0) {
-            return id * -1;
+            id = id * 10 + rand.nextInt(10);
         }
         return id;
     }
 
-    // Esta función sirve para crear una nueva excursión (Debemos importar , que
-    // se inicializó al arranque de APP en main)
+    // Método para crear una nueva excursión
     @FXML
     public void crearExcursion() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        boolean comprobadoOk = false;
         Date fecha = null;
         int numeroDias = 0;
         double precio = 0.0;
-        String respuesta = null;
-
+        String respuesta;
         // Comprobaciones
-        if (tfNombreExcursion.getText().isEmpty() || 
-            tfFechaExcursion.getText().isEmpty() || 
-            tfNumDias.getText().isEmpty() || 
+        if (tfNombreExcursion.getText().isEmpty() ||
+            tfFecha.getValue() == null ||
+            tfHora.getText().isEmpty() ||
+            tfNumDias.getText().isEmpty() ||
             tfPrecioInscripcion.getText().isEmpty()) {
-        
-            // Mostrar notificación de campos vacíos
-            NotificacionView.Notificacion("WARNING", "Campos Vacíoooooos", "Por favor, completa todos los campos.");
-            return; 
+            NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, completa todos los campos.");
+            return;
         }
-
-        // Pedimos la descripcion de la excursión
         String descripcionExcursion = tfNombreExcursion.getText();
-
-        // Pedimos la fecha de excursión y comprobamos el dato.
-        do {
-            String retorno = tfFechaExcursion.getText().trim();
-            if (retorno.isEmpty()) {
-                NotificacionView.Notificacion("WARNING", "Fecha Vacía", "La fecha de la excursión no puede estar vacía.");
-                return;
-            } else if (!retorno.matches("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$")) {
-                NotificacionView.Notificacion("WARNING", "Formato Incorrecto", "El formato de la fecha debe ser yyyy/MM/dd HH:mm.");
+        try {
+            String retorno = tfFecha.getValue().toString();
+            retorno += " " + tfHora.getText().trim();
+            if (!retorno.matches("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$")) {
+                NotificacionView.Notificacion("WARNING", "Formato Incorrecto",
+                        "El formato de la fecha debe ser yyyy-MM-dd HH:mm.");
                 return;
             }
-            try {
-                fecha = sdf.parse(retorno);
-                comprobadoOk = true;
-            } catch (ParseException e) {
-                NotificacionView.Notificacion("INFORMATION", "Fecha Incorrecta", "Error al parsear la fecha: " + e.getMessage()); // Cambio aquí
-                return;
-            }
-        } while (!comprobadoOk);
-
-        comprobadoOk = false;
-        // Pedimos el numero de dias y comprobamos el dato.
-        do {
+            fecha = sdf.parse(retorno);
+        } catch (ParseException e) {
+            NotificacionView.Notificacion("INFORMATION", "Fecha Incorrecta",
+                    "Error al parsear la fecha: " + e.getMessage());
+            return;
+        }
+        try {
             String retorno = tfNumDias.getText().trim();
-            if (retorno.isEmpty()) {
-                NotificacionView.Notificacion("WARNING", "Días Vacíos", "El número de días no puede estar vacío.");
-                return;
-            } else if (retorno.matches("\\d+")) { // Verifica si el retorno es un número entero
-                numeroDias = Integer.parseInt(retorno);
-                comprobadoOk = true;
-            } else {
-                NotificacionView.Notificacion("WARNING", "Formato Incorrecto", "El número de días debe ser un número entero.");
-                return;
-            }
-        } while (!comprobadoOk);
-
-        comprobadoOk = false;
-        do {
+            numeroDias = Integer.parseInt(retorno);
+        } catch (NumberFormatException e) {
+            NotificacionView.Notificacion("WARNING", "Formato Incorrecto",
+                    "El número de días debe ser un número entero.");
+            return;
+        }
+        try {
             String retorno = tfPrecioInscripcion.getText().trim();
-            if (retorno.isEmpty()) {
-                NotificacionView.Notificacion("WARNING", "Precio Vacío", "El precio no puede estar vacío.");
-                return;
-            } else if (retorno.matches("\\d+(\\.\\d+)?")) { // Verifica si el retorno es un número entero o double
-                precio = Double.parseDouble(retorno);
-                comprobadoOk = true;
-            } else {
-                NotificacionView.Notificacion("WARNING", "Formato Incorrecto", "El precio debe ser un número válido.");
-                return;
-            }
-        } while (!comprobadoOk);
-
-        // Método para generar un numeroExcursion aleatorio
-        int numeroExcursion = Integer.parseInt("1" + generarID()); // numeroExcursion
-        // Se genera el conjunto de en la variable excursion
+            precio = Double.parseDouble(retorno);
+        } catch (NumberFormatException e) {
+            NotificacionView.Notificacion("WARNING", "Formato Incorrecto",
+                    "El precio debe ser un número válido.");
+            return;
+        }
+        int numeroExcursion = generarID();
+        NotificacionView.Notificacion("INFORMATION", "Número de excursión generado", String.valueOf(numeroExcursion));
         ExcursionModel excursion = new ExcursionModel(numeroExcursion, descripcionExcursion, fecha, numeroDias, precio);
-
-        // Se llama al metodo crearExcursion del modelo ExcursionModel, se pasa tanto la instancia como el objeto creado
         try {
             respuesta = excursion.crearExcursionModel(excursion);
-            NotificacionView.Notificacion("SUCCESS", "Excursión Creada!", respuesta);
+            NotificacionView.Notificacion("INFORMATION", "Excursión Creada!", respuesta);
         } catch (Exception e) {
-            NotificacionView.Notificacion("ERROR", "Error", e.getMessage());
+            NotificacionView.Notificacion("ERROR", "Error creando excursión: ", e.getMessage());
         }
     }
 
     @FXML
     private void buscarExcursiones() {
+        inicializarTabla();
+        tInfo.setText("Buscando datos ...");
         LocalDate fechaInicioSeleccionada = tfFechaInicioExcursion.getValue();
         LocalDate fechaFinSeleccionada = tfFechaFinExcursion.getValue();
-    
-        // Se comprueba si el usuario quiere salir
         if (fechaInicioSeleccionada == null || fechaFinSeleccionada == null) {
-            taResultadoExcursion.setText("Operación cancelada.");
+            NotificacionView.Notificacion("error", "Campos vacíos", "Debes rellenar los campos.");
+            tInfo.setText("");
             return;
         }
-    
-        // Se intenta transformar las fechas y se muestran los resultados.
-        try {
-            Date fechaInicio = Date.from(fechaInicioSeleccionada.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Date fechaFin = Date.from(fechaFinSeleccionada.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    
-            // Verificación adicional para fechas válidas
-            if (fechaInicio.after(fechaFin)) {
-                taResultadoExcursion.setText("La fecha de inicio no puede ser posterior a la fecha de fin.");
-                return;
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    Date fechaInicio = Date.from(fechaInicioSeleccionada.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    Date fechaFin = Date.from(fechaFinSeleccionada.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    if (fechaInicio.after(fechaFin)) {
+                        Platform.runLater(() -> NotificacionView.Notificacion("WARNING", "Fechas incorrectas", "La fecha de inicio no puede ser posterior a la fecha de fin."));
+                        return null;
+                    }
+                    ArrayList<ExcursionModel> excursiones = ExcursionModel.objetoListaExcursion(fechaInicio, fechaFin);
+                    ObservableList<ExcursionModel> data = FXCollections.observableArrayList(excursiones);
+                    Platform.runLater(() -> taResultadoExcursion.setItems(data));
+                } catch (Exception e) {
+                    Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador", "Error en el controlador: " + e.getMessage()));
+                } finally {
+                    Platform.runLater(() -> tInfo.setText(""));
+                }
+                return null;
             }
-    
-            String respuesta = ExcursionModel.mostrarExcursiones(fechaInicio, fechaFin);
-            taResultadoExcursion.setText(respuesta);
-        } catch (Exception e) {
-            taResultadoExcursion.setText("Error al procesar las fechas: " + e.getMessage());
-        }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+    public void inicializarTabla() {
+        taNumeroExcursion.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
+        taDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        taFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        taPrecio.setCellValueFactory(new PropertyValueFactory<>("precioInscripcion"));
+        taNumDias.setCellValueFactory(new PropertyValueFactory<>("numeroDias"));
+        
+        taResultadoExcursion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Integer contenidoCelda = newSelection.getNumeroExcursion();
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                final ClipboardContent content = new ClipboardContent();
+                content.putString(contenidoCelda.toString());
+                clipboard.setContent(content);
+                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
+            }
+        });
     }
 }
+

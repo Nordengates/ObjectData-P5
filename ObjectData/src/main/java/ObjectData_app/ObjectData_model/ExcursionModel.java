@@ -5,6 +5,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import java.util.List;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.ExcursionModelHib;
@@ -21,8 +22,7 @@ public class ExcursionModel {
     private double precioInscripcion;
 
     // Constructor
-    public ExcursionModel(int numeroExcursion, String descripcion, Date fecha, int numeroDias,
-            double precioInscripcion) {
+    public ExcursionModel(int numeroExcursion, String descripcion, Date fecha, int numeroDias, double precioInscripcion) {
         this.numeroExcursion = numeroExcursion;
         this.descripcion = descripcion;
         this.fecha = fecha;
@@ -110,30 +110,25 @@ public class ExcursionModel {
         return excursion != null ? excursion.getPrecioInscripcion() : 0;
     }
 
-    public static String mostrarExcursiones(Date fechaInicio, Date fechaFin) {
+    public static ArrayList<ExcursionModel> objetoListaExcursion(Date fechaInicio, Date fechaFin) {
         crearSessionHib();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        List<ExcursionModelHib> excursions = null;
-        StringBuilder listado = new StringBuilder();
+        List<ExcursionModelHib> excursionesHib = null;
+        ArrayList<ExcursionModel> excursiones = new ArrayList<>();
         try {
             session.beginTransaction();
-            excursions = session
+            excursionesHib = session
                     .createQuery("FROM ExcursionModelHib WHERE fecha BETWEEN :start AND :end", ExcursionModelHib.class)
                     .setParameter("start", fechaInicio)
                     .setParameter("end", fechaFin)
                     .list();
             session.getTransaction().commit();
-            int contador = 0;
-            for (ExcursionModelHib excursion : excursions) {
-                contador++;
-                listado.append("\n- ").append(contador).append(". Código: ").append(excursion.getNumeroExcursion())
-                        .append(" | Descripción: ").append(excursion.getDescripcion())
-                        .append(" | Fecha y hora: ").append(dateFormat.format(excursion.getFecha()))
-                        .append(" | Número de días: ").append(excursion.getNumeroDias())
-                        .append(" | Precio de la inscripción: ").append(excursion.getPrecioInscripcion());
-            }
-            if (contador == 0) {
-                listado.append("\n  - Sin datos.");
+            for (ExcursionModelHib excursion : excursionesHib) {
+                excursiones.add(new ExcursionModel(
+                    excursion.getNumeroExcursion(), 
+                    excursion.getDescripcion(), 
+                    excursion.getFecha(), 
+                    excursion.getNumeroDias(), 
+                    excursion.getPrecioInscripcion()));
             }
         } catch (Exception e) {
             // Devolvemos el error aguas arriba en las clases
@@ -144,8 +139,9 @@ public class ExcursionModel {
             // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
             sessionFactory.close();
         }
-        return listado.toString();
+        return excursiones;
     }
+
 
     // Metodo paras listar los socios estandar.
     public static String[] obtenerListadoExcursiones() {
