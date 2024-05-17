@@ -83,7 +83,7 @@ public class ExcursionController {
             tfPrecioInscripcion.getText().isEmpty()) {
         
             // Mostrar notificación de campos vacíos
-            NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, completa todos los campos.");
+            NotificacionView.Notificacion("WARNING", "Campos Vacíoooooos", "Por favor, completa todos los campos.");
             return; 
         }
 
