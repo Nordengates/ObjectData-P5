@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.SocioController">
    <children>
-      <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="52.0" prefHeight="264.0" prefWidth="690.0" text="nuevoSocioInfantilFXMLLoader" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+      <Label fx:id="labelInput0" alignment="CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="122.0" prefHeight="78.0" prefWidth="298.0" text="Ingrese el nombre del nuevo socio: " textOverrun="CLIP" wrapText="true">
          <font>
-            <Font name="System Bold" size="36.0" />
-         </font></Label>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tfNombreSocioInfantil" layoutX="62.0" layoutY="175.0" prefHeight="25.0" prefWidth="258.0" />
+      <Label fx:id="labelInput1" alignment="CENTER" contentDisplay="CENTER" layoutX="-30.0" layoutY="187.0" prefHeight="78.0" prefWidth="398.0" text="Ingrese el ID socio del Tutor legal:" textOverrun="CLIP" wrapText="true">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tfCodigoTutor" layoutX="62.0" layoutY="240.0" prefHeight="25.0" prefWidth="258.0" />
+      <Button fx:id="btCrear" layoutX="504.0" layoutY="407.0" mnemonicParsing="false" onAction="#crearExcursion" prefHeight="25.0" prefWidth="140.0" text="Crear" />
+      <Label fx:id="labelTitulo" alignment="CENTER" contentDisplay="CENTER" layoutX="211.0" layoutY="14.0" prefHeight="78.0" prefWidth="298.0" text="Creación de Socio Infantil" textOverrun="CLIP" wrapText="true">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
