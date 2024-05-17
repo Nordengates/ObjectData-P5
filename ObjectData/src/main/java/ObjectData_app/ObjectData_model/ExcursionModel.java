@@ -142,17 +142,16 @@ public class ExcursionModel {
         return excursiones;
     }
 
-
     // Metodo paras listar los socios estandar.
-    public static String[] obtenerListadoExcursiones() {
+    public static ArrayList<ExcursionModel> obtenerListadoExcursiones() {
         // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
-        List<ExcursionModelHib> excursionList = null;
+        List<ExcursionModelHib> excursionesHib = null;
+        ArrayList<ExcursionModel> excursiones = new ArrayList<>();
         try {
             // Iniciamos una transacción en la sesión
             session.beginTransaction();
-            excursionList = session.createQuery("FROM ExcursionModelHib", ExcursionModelHib.class).list();
-
+            excursionesHib = session.createQuery("FROM ExcursionModelHib", ExcursionModelHib.class).list();
         } catch (Exception e) {
             // Devolvemos el error aguas arriba en las clases
             throw e;
@@ -162,52 +161,15 @@ public class ExcursionModel {
             // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
             sessionFactory.close();
         }
-        // Comprobar en la lista de socios estándar
-        StringBuilder listado = new StringBuilder();
-        int contador = 0;
-        for (ExcursionModelHib excursion : excursionList) {
-            contador++;
-            listado.append("\n- ").append(contador).append(". Descripción: ").append(excursion.getDescripcion())
-                    .append(" | Precio: ").append(excursion.getPrecioInscripcion());
+        for (ExcursionModelHib excursion : excursionesHib) {
+            excursiones.add(new ExcursionModel(
+                excursion.getNumeroExcursion(), 
+                excursion.getDescripcion(), 
+                excursion.getFecha(), 
+                excursion.getNumeroDias(), 
+                excursion.getPrecioInscripcion()));
         }
-        if (contador == 0) {
-            listado.append("\n  - Sin datos de socios Estandar.");
-        }
-        return new String[] { listado.toString(), String.valueOf(contador) };
-    }
-
-    public static ExcursionModel obtenerExcursionDesdeLista(int seleccion) {
-        // Creamos una sesión de Hibernate y la iniciamos
-        crearSessionHib();
-        List<ExcursionModelHib> excursionList = null;
-        try {
-            // Iniciamos una transacción en la sesión
-            session.beginTransaction();
-            excursionList = session.createQuery("FROM ExcursionModelHib", ExcursionModelHib.class).list();
-        } catch (Exception e) {
-            // Devolvemos el error aguas arriba en las clases
-            throw e;
-        } finally {
-            // Finalmente cerramos la sesión y el objeto de fábrica de sesiones
-            session.close();
-            // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
-            sessionFactory.close();
-        }
-        // Comprobar en la lista de socios estándar
-        int contador = 0;
-        // Logica
-        for (ExcursionModelHib excursion : excursionList) {
-            contador++;
-            if (contador == seleccion) {
-                return new ExcursionModel(
-                        excursion.getNumeroExcursion(),
-                        excursion.getDescripcion(),
-                        excursion.getFecha(),
-                        excursion.getNumeroDias(),
-                        excursion.getPrecioInscripcion());
-            }
-        }
-        return null;
+        return excursiones;
     }
 
     // Getters y Setters
