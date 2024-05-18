@@ -1,14 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.InscripcionController">
+<AnchorPane fx:id="taListadoMostrarInscripcionesFecha" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" style="-fx-background-color: #F4F6F7dd; -fx-border-radius: 10;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.InscripcionController">
    <children>
-      <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="52.0" prefHeight="264.0" prefWidth="690.0" text="mostrarInscripcionFechaFXMLLoader" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+      <Text layoutX="174.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="BUSCADOR DE INSCRIPCIONES POR FECHA" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
          <font>
-            <Font name="System Bold" size="36.0" />
-         </font></Label>
+            <Font size="16.0" />
+         </font>
+      </Text>
+      <Label fx:id="label1" alignment="CENTER" contentDisplay="CENTER" layoutX="105.0" layoutY="62.0" prefHeight="25.0" prefWidth="192.0" text="Ingrese la fecha de inicio:" textOverrun="CLIP" wrapText="true">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <Label fx:id="label12" alignment="CENTER" contentDisplay="CENTER" layoutX="305.0" layoutY="58.0" prefHeight="32.0" prefWidth="200.0" text="Ingrese la fecha de fin:" textOverrun="CLIP" wrapText="true">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <DatePicker fx:id="tfFechaInicioinscripcion" layoutX="114.0" layoutY="88.0" />
+      <DatePicker fx:id="tfFechaFinInscripcion" layoutX="318.0" layoutY="88.0" />
+      <Text fx:id="tInfo" fill="RED" layoutX="508.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="181.13671875" />
+      <Button fx:id="bnBuscarMostrarInscripcion" onAction="#mostrarInscripcionPorFecha" layoutX="549.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Button>
+      <TableView fx:id="taResultadoInscripcion" layoutX="7.0" layoutY="130.0" prefHeight="342.0" prefWidth="707.0">
+         <columns>
+            <TableColumn fx:id="taNumeroInscripcion" prefWidth="100.0" text="Núm inscripción" />
+            <TableColumn fx:id="taNumeroExcursion" prefWidth="140.0" text="Num Excursion" />
+            <TableColumn fx:id="taNumeroSocio" prefWidth="100.0" text="Num Socio" />
+            <TableColumn fx:id="taFecha" prefWidth="120.0" text="Fecha Inscripcion" />
+            <TableColumn fx:id="taNombreExcursion" prefWidth="120.0" text="Nombre Excursion" />
+            <TableColumn fx:id="taNombreSocio" prefWidth="120.0" text="Nombre Socio" />
+            <TableColumn fx:id="taPrecioInscripcion" prefWidth="100.0" text="Precio Inscripcion" />
+            <TableColumn fx:id="taPrecioTotal" prefWidth="100.0" text="Precio Total" />
+            <TableColumn fx:id="taCadenaDescuento" prefWidth="200.0" text="Cadena Descuento" />
+         </columns>
+      </TableView>
    </children>
 </AnchorPane>
