@@ -4,8 +4,13 @@ import ObjectData_app.ObjectData_model.SocioEstandarModel;
 import ObjectData_app.ObjectData_model.SocioFederadoModel;
 import ObjectData_app.ObjectData_model.SocioInfantilModel;
 import ObjectData_app.ObjectData_model.SocioModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -15,6 +20,7 @@ import ObjectData_app.ObjectData_view.NotificacionView;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -33,6 +39,12 @@ import ObjectData_app.ObjectData_controller.SocioController;
 
 public class SocioController {
     @FXML
+    private CheckBox filterEstandar;
+    @FXML
+    private CheckBox filterFederado;
+    @FXML
+    private CheckBox filterInfantil;
+    @FXML
     private Text taInfo;
     @FXML
     private TableView<Object> taTodosLosSocios;
@@ -42,6 +54,7 @@ public class SocioController {
     private TableColumn<Object, String> taNombre;
     @FXML
     private TableColumn<Object, String> taTipoSocio;
+    private FilteredList<Object> filteredData;
 
     //Componentes de 'Eliminar Socio'
     @FXML
@@ -74,7 +87,11 @@ public class SocioController {
     }
 
     public void mostrarTodosLosSocios() {
-        //Iniciamos la tabla
+        taInfo.setText("Buscando datos ...");
+        filterEstandar.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
+        filterFederado.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
+        filterInfantil.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
+        // Iniciamos la tabla
         taNumeroSocio.setCellValueFactory(cellData -> {
             Object item = cellData.getValue();
             if (item instanceof SocioEstandarModel) {
@@ -89,7 +106,6 @@ public class SocioController {
             }
             return null;
         });
-
         taNombre.setCellValueFactory(cellData -> {
             Object item = cellData.getValue();
             if (item instanceof SocioEstandarModel) {
@@ -104,7 +120,6 @@ public class SocioController {
             }
             return null;
         });
-
         taTipoSocio.setCellValueFactory(cellData -> {
             Object item = cellData.getValue();
             if (item instanceof SocioEstandarModel) {
@@ -117,17 +132,51 @@ public class SocioController {
             return null;
         });
 
-        //Obtenemos los objetos de los socios
-        ArrayList<SocioEstandarModel> socioEstandarModels = SocioEstandarModel.obtenerSocios();
-        ArrayList<SocioFederadoModel> socioFederadoModels = SocioFederadoModel.obtenerSocios();
-        ArrayList<SocioInfantilModel> socioInfantilModels = SocioInfantilModel.obtenerSocios();
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    // Obtenemos los objetos de los socios
+                    ArrayList<SocioEstandarModel> socioEstandarModels = SocioEstandarModel.obtenerSocios();
+                    ArrayList<SocioFederadoModel> socioFederadoModels = SocioFederadoModel.obtenerSocios();
+                    ArrayList<SocioInfantilModel> socioInfantilModels = SocioInfantilModel.obtenerSocios();
+                    // Create an ObservableList and add the items to it
+                    ObservableList<Object> allSocios = FXCollections.observableArrayList();
+                    allSocios.addAll(socioEstandarModels);
+                    allSocios.addAll(socioFederadoModels);
+                    allSocios.addAll(socioInfantilModels);
 
-        //Añadimos los socios a la tabla
-        taTodosLosSocios.getItems().addAll(socioEstandarModels);
-        taTodosLosSocios.getItems().addAll(socioFederadoModels);
-        taTodosLosSocios.getItems().addAll(socioInfantilModels);
+                    filteredData = new FilteredList<>(allSocios);
+
+                    // Añadimos los socios a la tabla
+                    taTodosLosSocios.setItems(filteredData);
+                } catch (Exception e) {
+                    Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
+                            "Error en el controlador: " + e.getMessage()));
+                } finally {
+                    Platform.runLater(() -> taInfo.setText(""));
+                }
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
-    //SocioEstandar: 
+
+    private void applyFilter() {
+        filteredData.setPredicate(item -> {
+            boolean estandar = item instanceof SocioEstandarModel;
+            boolean federado = item instanceof SocioFederadoModel;
+            boolean infantil = item instanceof SocioInfantilModel;
+
+            return (filterEstandar.isSelected() && estandar) ||
+                    (filterFederado.isSelected() && federado) ||
+                    (filterInfantil.isSelected() && infantil);
+        });
+    }
+
+    // SocioEstandar:
 
     @FXML
     private TextField tfNombreSocioEstandar;
@@ -140,6 +189,11 @@ public class SocioController {
 
     @FXML
     private Button btCrear;
+
+    // @FXML
+    // public void initialize() {
+    // cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
+    // }
 
     // Método para generar un número de socio aleatorio
     public static int generarID() {
@@ -169,14 +223,15 @@ public class SocioController {
         int numeroSocio;
         boolean todoOk = false;
 
-        //RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR UN SOCIO ESTANDAR --");
-        
+        // RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR UN SOCIO ESTANDAR --");
+
         do {
             numeroSocio = Integer.parseInt("5" + generarID());
 
             SeguroModel seguroModel = seguroSocio();
             if (seguroModel == null) {
-                NotificacionView.Notificacion("ERROR", "Tipo de Seguro Inválido", "Por favor, selecciona un tipo de seguro válido.");
+                NotificacionView.Notificacion("ERROR", "Tipo de Seguro Inválido",
+                        "Por favor, selecciona un tipo de seguro válido.");
                 break;
             }
 
@@ -187,7 +242,8 @@ public class SocioController {
                 NotificacionView.Notificacion("INFORMATION", "Éxito", "Se ha creado el socio estándar correctamente.");
                 todoOk = true;
             } catch (Exception e) {
-                NotificacionView.Notificacion("ERROR", "Error en la Creación", "Hubo un error al crear el socio estándar: " + e.getMessage());
+                NotificacionView.Notificacion("ERROR", "Error en la Creación",
+                        "Hubo un error al crear el socio estándar: " + e.getMessage());
             }
         } while (!todoOk);
     }
@@ -593,21 +649,21 @@ public class SocioController {
         // Volvemos al menu principal de la gestión de los socios.
     }
 
-   // Metodo para seleccionar el seguro de un socio estandar.
-   @FXML
-   private SeguroModel seguroSocio() {
-       // Tratamiento del seguro
-       TipoSeguro tipoSeguro = null;
-       String retornoSeguro = cbTipoSeguro.getValue();
+    // Metodo para seleccionar el seguro de un socio estandar.
+    @FXML
+    private SeguroModel seguroSocio() {
+        // Tratamiento del seguro
+        TipoSeguro tipoSeguro = null;
+        String retornoSeguro = cbTipoSeguro.getValue();
 
-       if (retornoSeguro.startsWith("1")) {
-           tipoSeguro = TipoSeguro.BASICO;
-       } else if (retornoSeguro.startsWith("2")) {
-           tipoSeguro = TipoSeguro.COMPLETO;
-       } else {
-           return null;
-       }
+        if (retornoSeguro.startsWith("1")) {
+            tipoSeguro = TipoSeguro.BASICO;
+        } else if (retornoSeguro.startsWith("2")) {
+            tipoSeguro = TipoSeguro.COMPLETO;
+        } else {
+            return null;
+        }
 
-       return new SeguroModel(tipoSeguro);
-   }
+        return new SeguroModel(tipoSeguro);
+    }
 }

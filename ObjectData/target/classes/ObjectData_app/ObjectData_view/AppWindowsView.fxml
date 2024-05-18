@@ -24,14 +24,7 @@
                            <MenuItem id="nuevoSocioInfantil" fx:id="mnu_nuevoSocioInfantil" mnemonicParsing="false" onAction="#nuevoSocioInfantilFXMLLoader" text="Socio infantil" />
                         </items>
                      </Menu>
-                     <Menu id="mnu_mostrarSocio" mnemonicParsing="false" text="Mostrar ...">
-                        <items>
-                           <MenuItem id="mostrarSocioSocios" fx:id="mnu_mostrarTodosSocios" mnemonicParsing="false" onAction="#mostrarSociosFXMLLoader" text="Todos los socios" />
-                           <MenuItem id="mostrarSocioEstandar" fx:id="mnu_mostrarSocioEstandar" mnemonicParsing="false" onAction="#mostrarSocioEstandarFXMLLoader" text="Socios estandar" />
-                           <MenuItem id="mostrarSocioFederado" fx:id="mnu_mostrarSocioFederado" mnemonicParsing="false" onAction="#mostrarSocioFederadoFXMLLoader" text="Socios federados" />
-                           <MenuItem id="mostrarSocioInfantil" fx:id="mnu_mostrarSocioInfantil" mnemonicParsing="false" onAction="#mostrarSocioInfantilFXMLLoader" text="Socios infantiles" />
-                        </items>
-                     </Menu>
+                     <MenuItem id="mostrarTodosSocios" fx:id="mnu_mostrarTodosSocios" mnemonicParsing="false" onAction="#mostrarSociosFXMLLoader" text="Mostrar socios" />
                      <MenuItem id="eliminarSocio" fx:id="mnu_eliminarSocio" mnemonicParsing="false" onAction="#eliminarSocioFXMLLoader" text="Eliminar socio" />
                      <MenuItem id="modificarSeguroSocio" fx:id="mnu_modificarSeguroSocio" mnemonicParsing="false" onAction="#modificarSeguroFXMLLoader" text="Moficiar seguro a socio" />
                      <MenuItem id="mostrarFacturacionMensual" fx:id="mnu_mostrarFacturacionMensual" mnemonicParsing="false" onAction="#mostrarFacturacionSocioFXMLLoader" text="Mostrar facturación mensual" />

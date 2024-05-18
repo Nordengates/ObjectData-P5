@@ -18,7 +18,8 @@ public class AppController {
     public void AppWindowsView() {
         try {
             this.stage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("/ObjectData_app/ObjectData_view/AppWindowsView.fxml"));
+            Parent root = FXMLLoader
+                    .load(getClass().getResource("/ObjectData_app/ObjectData_view/AppWindowsView.fxml"));
             this.stage.setScene(new Scene(root));
             this.stage.setTitle("ObjectData Aplicación V1.0");
             this.stage.showAndWait();
@@ -57,22 +58,19 @@ public class AppController {
 
     @FXML
     public void mostrarSociosFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/SocioView/mostrarSociosFXMLLoader.fxml");
-    }
-
-    @FXML
-    public void mostrarSocioEstandarFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/SocioView/mostrarSocioEstandarFXMLLoader.fxml");
-    }
-
-    @FXML
-    public void mostrarSocioFederadoFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/SocioView/mostrarSocioFederadoFXMLLoader.fxml");
-    }
-
-    @FXML
-    public void mostrarSocioInfantilFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/SocioView/mostrarSocioInfantilFXMLLoader.fxml");
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/ObjectData_app/ObjectData_view/SocioView/mostrarSociosFXMLLoader.fxml"));
+        try {
+            Parent formulario = loader.load();
+            mainContainer.setCenter(formulario);
+            // Obtener el controlador del formulario cargado
+            SocioController controller = loader.getController();
+            // Llamar al método buscarExcursiones() en el controlador
+            controller.mostrarTodosLosSocios();
+            // Mostrar el formulario
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -94,7 +92,21 @@ public class AppController {
     // (Gestión Inscripciones)
     @FXML
     public void nuevaInscripcionFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml");
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
+        try {
+            Parent root = loader.load();
+            // Obtener el controlador del formulario cargado
+            InscripcionController controller = loader.getController();
+            // Llamar al método buscarExcursiones() en el controlador
+            controller.crearInscripcion();
+            // Mostrar el formulario
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
