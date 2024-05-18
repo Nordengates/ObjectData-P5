@@ -1,14 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.SocioController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" style="-fx-background-color: #F4F6F7dd;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.SocioController">
    <children>
-      <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="52.0" prefHeight="264.0" prefWidth="690.0" text="mostrarFacturacionSocioFXMLLoader" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+      <Text layoutX="174.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FACTURACIÓN DEL SOCIO" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
          <font>
-            <Font name="System Bold" size="36.0" />
-         </font></Label>
+            <Font size="16.0" />
+         </font>
+      </Text>
+      <Text layoutX="14.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtra por número de socio:" wrappingWidth="198.13671875">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
+      <TextField fx:id="tfNumeroSocio" layoutX="209.0" layoutY="48.0" prefHeight="25.0" prefWidth="143.0" />
+      <Text layoutX="33.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(Selecciona el socio desde la tabla)" textAlignment="CENTER" wrappingWidth="299.13671875">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Text>
+      <TableView fx:id="taTodosLosSocios" layoutX="14.0" layoutY="101.0" prefHeight="364.0" prefWidth="338.0">
+        <columns>
+          <TableColumn fx:id="taNumeroSocio" prefWidth="107.0" text="Número socio" />
+          <TableColumn fx:id="taNombre" prefWidth="230.0" text="Nombre del socio" />
+        </columns>
+      </TableView>
+      <TableView fx:id="taResultadoFacturacion" layoutX="368.0" layoutY="101.0" prefHeight="364.0" prefWidth="338.0">
+         <columns>
+            <TableColumn prefWidth="170.0" text="Facturación total del socio:">
+               <columns>
+                  <TableColumn fx:id="taConceptoFacturacion" prefWidth="217.0" text="Concepto" />
+                  <TableColumn fx:id="taCosteFacturacion" prefWidth="120.0" text="Coste" />
+               </columns>
+            </TableColumn>
+         </columns>
+      </TableView>
+      <Text fx:id="tInfo" fill="RED" layoutX="95.0" layoutY="223.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CARGANDO DATOS ..." underline="true" wrappingWidth="359.13671875">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Text>
+      <Text fx:id="tInfo1" fill="RED" layoutX="105.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" underline="true" wrappingWidth="529.13671875">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Text>
    </children>
 </AnchorPane>

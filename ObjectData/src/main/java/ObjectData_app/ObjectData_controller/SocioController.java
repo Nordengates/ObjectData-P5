@@ -5,6 +5,7 @@ import ObjectData_app.ObjectData_model.SocioFederadoModel;
 import ObjectData_app.ObjectData_model.SocioInfantilModel;
 import ObjectData_app.ObjectData_model.SocioModel;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,6 +16,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.text.Text;
 import ObjectData_app.ObjectData_view.NotificacionView;
 import javafx.scene.control.Alert;
@@ -26,7 +29,10 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 
 import ObjectData_app.ObjectData_model.ExcursionModel;
@@ -38,6 +44,11 @@ import ObjectData_app.ObjectData_model.SeguroModel.TipoSeguro;
 import ObjectData_app.ObjectData_controller.SocioController;
 
 public class SocioController {
+    // Propiedades
+    @FXML
+    private Text tInfo;
+    @FXML
+    private Text tInfo1;
     @FXML
     private CheckBox filterEstandar;
     @FXML
@@ -45,7 +56,9 @@ public class SocioController {
     @FXML
     private CheckBox filterInfantil;
     @FXML
-    private Text taInfo;
+    private TextField filterNumeroSocio;
+    @FXML
+    private FilteredList<Object> filteredData;
     @FXML
     private TableView<Object> taTodosLosSocios;
     @FXML
@@ -53,122 +66,47 @@ public class SocioController {
     @FXML
     private TableColumn<Object, String> taNombre;
     @FXML
-    private TableColumn<Object, String> taTipoSocio;
-    private FilteredList<Object> filteredData;
-
-    //Componentes de 'Eliminar Socio'
+    private TableView<Object> taResultadoFacturacion;
     @FXML
-    private TextField tfNumeroSocioEliminar;
+    private TableColumn<Object, String> taConceptoFacturacion;
+    @FXML
+    private TableColumn<Object, String> taCosteFacturacion;
+    @FXML
+    private TextField tfNumeroSocio;
     @FXML
     private Button btBuscarSocioEliminar;
-    @FXML
-    private Label lbAvisoEliminacion;
-    @FXML 
-    private TableView<Object> tvTablaEliminarSocio;
-    @FXML
-    private TableColumn<Object, Integer> colNumeroSocio;
-    @FXML
-    private TableColumn<Object, String> colNombre;
-    // FIN 
 
     @FXML
-   public void initialize() {
-        if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
+    public void initialize() {
+        if (cbTipoSeguro != null)
+            cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
 
         // Configurar las columnas de la tabla de eliminación de socios
-        if(colNumeroSocio!=null) colNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
-        if(colNombre!=null) colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        if (taNumeroSocio != null)
+            taNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
+        if (taNombre != null)
+            taNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
     }
 
     @FXML
     public void initializeForm() {
-        if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
+        if (cbTipoSeguro != null)
+            cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
         limpiarAvisoEliminacion();
     }
 
-    public void inicializarScreenEliminacion(){
+    public void inicializarScreenEliminacion() {
+        taTodosLosSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                System.out.println(newSelection);
+            }
+        });
         limpiarAvisoEliminacion();
-         // Configurar las columnas de la tabla de eliminación de socios
-         if(colNumeroSocio!=null) colNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
-         if(colNombre!=null) colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-    }
-
-    public void mostrarTodosLosSocios() {
-        taInfo.setText("Buscando datos ...");
-        filterEstandar.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
-        filterFederado.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
-        filterInfantil.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
-        // Iniciamos la tabla
-        taNumeroSocio.setCellValueFactory(cellData -> {
-            Object item = cellData.getValue();
-            if (item instanceof SocioEstandarModel) {
-                SocioEstandarModel socio = (SocioEstandarModel) item;
-                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
-            } else if (item instanceof SocioFederadoModel) {
-                SocioFederadoModel socio = (SocioFederadoModel) item;
-                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
-            } else if (item instanceof SocioInfantilModel) {
-                SocioInfantilModel socio = (SocioInfantilModel) item;
-                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
-            }
-            return null;
-        });
-        taNombre.setCellValueFactory(cellData -> {
-            Object item = cellData.getValue();
-            if (item instanceof SocioEstandarModel) {
-                SocioEstandarModel socio = (SocioEstandarModel) item;
-                return new SimpleStringProperty(socio.getNombre());
-            } else if (item instanceof SocioFederadoModel) {
-                SocioFederadoModel socio = (SocioFederadoModel) item;
-                return new SimpleStringProperty(socio.getNombre());
-            } else if (item instanceof SocioInfantilModel) {
-                SocioInfantilModel socio = (SocioInfantilModel) item;
-                return new SimpleStringProperty(socio.getNombre());
-            }
-            return null;
-        });
-        taTipoSocio.setCellValueFactory(cellData -> {
-            Object item = cellData.getValue();
-            if (item instanceof SocioEstandarModel) {
-                return new SimpleStringProperty("Estandar");
-            } else if (item instanceof SocioFederadoModel) {
-                return new SimpleStringProperty("Federado");
-            } else if (item instanceof SocioInfantilModel) {
-                return new SimpleStringProperty("Infantil");
-            }
-            return null;
-        });
-
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() {
-                try {
-                    // Obtenemos los objetos de los socios
-                    ArrayList<SocioEstandarModel> socioEstandarModels = SocioEstandarModel.obtenerSocios();
-                    ArrayList<SocioFederadoModel> socioFederadoModels = SocioFederadoModel.obtenerSocios();
-                    ArrayList<SocioInfantilModel> socioInfantilModels = SocioInfantilModel.obtenerSocios();
-                    // Create an ObservableList and add the items to it
-                    ObservableList<Object> allSocios = FXCollections.observableArrayList();
-                    allSocios.addAll(socioEstandarModels);
-                    allSocios.addAll(socioFederadoModels);
-                    allSocios.addAll(socioInfantilModels);
-
-                    filteredData = new FilteredList<>(allSocios);
-
-                    // Añadimos los socios a la tabla
-                    taTodosLosSocios.setItems(filteredData);
-                } catch (Exception e) {
-                    Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
-                            "Error en el controlador: " + e.getMessage()));
-                } finally {
-                    Platform.runLater(() -> taInfo.setText(""));
-                }
-                return null;
-            }
-        };
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
+        // Configurar las columnas de la tabla de eliminación de socios
+        if (taNumeroSocio != null)
+            taNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
+        if (taNombre != null)
+            taNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
     }
 
     private void applyFilter() {
@@ -184,23 +122,14 @@ public class SocioController {
     }
 
     // SocioEstandar:
-
     @FXML
     private TextField tfNombreSocioEstandar;
-
     @FXML
     private TextField tfDniSocioEstandar;
-
     @FXML
     private ChoiceBox<String> cbTipoSeguro;
-
     @FXML
     private Button btCrear;
-
-    // @FXML
-    // public void initialize() {
-    // cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
-    // }
 
     // Método para generar un número de socio aleatorio
     public static int generarID() {
@@ -222,28 +151,21 @@ public class SocioController {
         String nombre = tfNombreSocioEstandar.getText();
         String NIF = tfDniSocioEstandar.getText();
         String tipoSeguroSeleccionado = cbTipoSeguro.getValue();
-
         if (nombre.isEmpty() || NIF.isEmpty() || tipoSeguroSeleccionado == null) {
             NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, completa todos los campos.");
             return;
         }
         int numeroSocio;
         boolean todoOk = false;
-
-        // RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR UN SOCIO ESTANDAR --");
-
         do {
             numeroSocio = Integer.parseInt("5" + generarID());
-
             SeguroModel seguroModel = seguroSocio();
             if (seguroModel == null) {
                 NotificacionView.Notificacion("ERROR", "Tipo de Seguro Inválido",
                         "Por favor, selecciona un tipo de seguro válido.");
                 break;
             }
-
             SocioEstandarModel socioModel = new SocioEstandarModel(numeroSocio, nombre, NIF, seguroModel);
-
             try {
                 SocioEstandarModel.crearSocioEstandar(socioModel);
                 NotificacionView.Notificacion("INFORMATION", "Éxito", "Se ha creado el socio estándar correctamente.");
@@ -255,7 +177,7 @@ public class SocioController {
         } while (!todoOk);
     }
 
-    public  void modificarSeguroSocioEstandar() {
+    public void modificarSeguroSocioEstandar() {
         // Atributos
         String nombre = tfNombreSocioEstandar.getText();
         String NIF = tfDniSocioEstandar.getText();
@@ -268,7 +190,8 @@ public class SocioController {
         int numeroSocio;
         boolean todoOk = false;
         // Imprimitos el titulo de la función.
-        //RespView.tituloDeLaFuncion("-- FORMULARIO PARA MODIFICAR EL TIPO DE SEGURO --");
+        // RespView.tituloDeLaFuncion("-- FORMULARIO PARA MODIFICAR EL TIPO DE SEGURO
+        // --");
         // Bucle de logica para comprobar datos.
         do {
             // Pedimos el nombre del socio.
@@ -435,226 +358,73 @@ public class SocioController {
         }
     }
 
-    @FXML
-    private void accionBuscarSocioEliminar(){
-        limpiarAvisoEliminacion();
-        tvTablaEliminarSocio.getItems().clear();
-        String input = tfNumeroSocioEliminar.getText();
-
-        //Validaciones 
-        if (input.isEmpty()) {
-            mostrarAvisoEliminacion("El campo de número de socio está vacío.");
-            return;
-        }
-        if (!input.matches("\\d+")) {
-            mostrarAvisoEliminacion("El número de socio debe ser un valor numérico.");
-            return;
-        }
-
-        int numeroSocio = Integer.parseInt(input);
-        SocioModel socio = SocioModel.obtenerSocioPorNumeroSocio(numeroSocio);
-
-        if (socio != null) {
-            tvTablaEliminarSocio.getItems().clear();
-            tvTablaEliminarSocio.getItems().add(socio);
-        } else {
-            mostrarAvisoEliminacion("No se encontró ningún socio con el número " + numeroSocio);
-        }
-
+    private void mostrarAvisoEliminacion(String warning) {
+        tInfo.setText(warning);
     }
 
-    private void mostrarAvisoEliminacion(String warning){
-        if(lbAvisoEliminacion!=null) lbAvisoEliminacion.setText(warning);
+    private void limpiarAvisoEliminacion() {
+        tInfo.setText("");
     }
-
-    private void limpiarAvisoEliminacion(){
-        if(lbAvisoEliminacion!=null) lbAvisoEliminacion.setText("");
-    } 
 
     @FXML
     public void accionEliminarSocio() {
-        String tipoSocio = null;
-        int numeroSocio = 0;
         boolean inscritoEnExcursion = false;
-    
-        // Obtener el socio seleccionado en la tabla
-        SocioModel socioSeleccionado = (SocioModel) tvTablaEliminarSocio.getSelectionModel().getSelectedItem();
-    
-        if (socioSeleccionado == null) {
-            // Mostrar mensaje si no se ha seleccionado ningún socio
-            mostrarAvisoEliminacion("Por favor, seleccione un socio para eliminar.");
-            return;
-        }
-    
-        numeroSocio = socioSeleccionado.getNumeroSocio();
-    
-        // Verificar si el socio está inscrito en alguna excursión
-        try {
-            inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
-        } catch (Exception e) {
-            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
-            return;
-        }
-    
-        if (inscritoEnExcursion) {
-            // Mostrar mensaje de que el socio está inscrito en una excursión y no puede ser eliminado
-            mostrarAvisoEliminacion("El socio con número de socio " + numeroSocio + " está inscrito en una excursión y no puede ser eliminado.");
-            return;
-        }
-    
-        // Verificar el tipo de socio y llamar al método eliminar correspondiente
-        try {
-            tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
-        } catch (Exception e) {
-            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
-            return;
-        }
-
-        // Eliminar el socio según su tipo
-        try {
-            switch (tipoSocio) {
-                case "Estandar":
-                    SocioEstandarModel.eliminarSocioModel(numeroSocio);
-                    break;
-                case "Federado":
-                    SocioFederadoModel.eliminarSocioModel(numeroSocio);
-                    break;
-                case "Infantil":
-                    SocioInfantilModel.eliminarSocioModel(numeroSocio);
-                    break;
-                default:
-                    throw new Exception("No se ha podido identificar el tipo de socio.");
-            }
-
-            Alert alert = new Alert(AlertType.INFORMATION, "El socio con número de socio " + numeroSocio + " ha sido eliminado correctamente.", ButtonType.OK);
-            alert.setHeaderText(null);
-            alert.setTitle("Eliminación Exitosa");
-            alert.showAndWait();
-
-        } catch (Exception e) {
-            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
-            System.err.println("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
-        }
-    
-        // Actualizar la tabla después de eliminar el socio
-        tvTablaEliminarSocio.getItems().remove(socioSeleccionado);
-    }
-    
-
-    public static void facturaMensualSocio() {
-        // Atributos
-        int numeroSocio = 0;
-        boolean valoresComprobados = false;
-        String tipoSocio = "";
-        Double precioSeguro = 0.0;
-        Double facturacion = 0.0;
-        final Double cuotaMensual = 10.00;
-        String[] retornoArray = null;
-        String respuesta = "\nFacturación del socio: ";
-        // Imprimo en pantalla el titulo del metodo
-        RespView.tituloDeLaFuncion("-- MUESTRA LA FACTURACIÓN DE UN SOCIO --");
-        // Comprobación de datos
-        do {
-            // Se muestran la vista y se piden datos.
-            String retorno = SociView.obtenerNumeroSocio();
-            // Verificar si la cadena retorno está vacía
-            if (retorno.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            } else if (retorno.matches("\\d+")) { // Verifica si el retorno es un número entero
-                numeroSocio = Integer.parseInt(retorno);
-            } else {
-                // Si no es un número entero, muestra un mensaje de error
-                RespView.excepcionesControllerView("Debe insertar un valor númerico válido.");
-                continue;
-            }
-            // Se comprueba que el usuario no quiere salir del método y se comprueban datos
-            if (numeroSocio == 0) {
-                break;
-            } else {
+        taTodosLosSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                int numeroSocio = ((SocioModel) newSelection).getNumeroSocio();
+                String tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
+                // Eliminar el socio según su tipo
                 try {
-                    if (SocioModel.comprobarSocioPorNumeroSocio(numeroSocio)) {
-                        try {
-                            tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
-                            valoresComprobados = true;
-                        } catch (Exception e) {
-                            RespView.excepcionesControllerView(e.getMessage());
-                            continue;
-                        }
-                    } else {
-                        RespView.excepcionesControllerView("No se ha podido encontrar el socio.");
-                        continue;
+                    // try {
+                    // inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
+                    // } catch (Exception e) {
+                    // mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:" +
+                    // e.getMessage());
+                    // return;
+                    // }
+                    // // Verificar si el socio está inscrito en alguna excursión
+                    // try {
+                    // inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
+                    // } catch (Exception e) {
+                    // mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:" +
+                    // e.getMessage());
+                    // return;
+                    // }
+                    // if (inscritoEnExcursion) {
+                    // // Mostrar mensaje de que el socio está inscrito en una excursión y no puede
+                    // ser
+                    // // eliminado
+                    // mostrarAvisoEliminacion("El socio con número de socio " + numeroSocio
+                    // + " está inscrito en una excursión y no puede ser eliminado.");
+                    // return;
+                    // }
+                    Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+                    alertConfirmation.setTitle("Confirmación de Eliminación");
+                    alertConfirmation.setHeaderText(null);
+                    alertConfirmation.setContentText("¿Estás seguro de que deseas eliminar al socio con número de socio " + numeroSocio + "?");
+                    Optional<ButtonType> result = alertConfirmation.showAndWait();
+                    if (result.isPresent() && result.get() != ButtonType.OK) {
+                        return;
+                    }
+                    switch (tipoSocio) {
+                        case "Estandar":
+                            SocioEstandarModel.eliminarSocioModel(numeroSocio);
+                            break;
+                        case "Federado":
+                            SocioFederadoModel.eliminarSocioModel(numeroSocio);
+                            break;
+                        case "Infantil":
+                            SocioInfantilModel.eliminarSocioModel(numeroSocio);
+                            break;
+                        default:
+                            throw new Exception("No se ha podido identificar el tipo de socio.");
                     }
                 } catch (Exception e) {
-                    RespView.excepcionesControllerView(e.getMessage());
+                    mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
+                    System.err.println("Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
                 }
             }
-        } while (!valoresComprobados);
-        if (tipoSocio.equals("Estandar")) {
-            // Coste de la cuota
-            respuesta += "\n    - Coste de la cuota: " + cuotaMensual + " euros.";
-            // Obtenemos el precio del seguro contratado desde el modelo.
-            // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
-            // usar try para comprobar posibles excepciones.
-            try {
-                precioSeguro = SocioEstandarModel.getSocioPorNumeroSocio(numeroSocio).getSeguro().getPrecio();
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-            // Obtener listado de excursiones y precio:
-            // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
-            // usar try para comprobar posibles excepciones.
-            try {
-                retornoArray = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-            respuesta += retornoArray[0];
-            // Precio del seguro.
-            respuesta += "\n    - Coste del seguro: " + precioSeguro + " euros.";
-            // Se genera el precio final de facturación
-            facturacion = cuotaMensual + precioSeguro + Double.parseDouble(retornoArray[1]);
-            // Se manda el resultado a la vista
-            respuesta += "\n El socio factura " + facturacion + " euros mensuales.";
-        } else if (tipoSocio.equals("Federado")) {
-            // Aplicamos un despues de la cuota mensual 5%
-            Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 5 / 100);
-            // Obtener listado de escursiones y precio:
-            // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
-            // usar try para comprobar posibles excepciones.
-            try {
-                retornoArray = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-            respuesta += retornoArray[0];
-            // Se calcula el descuento de las escursiones de este socio. 10%
-            Double descuentoExcursiones = Double.parseDouble(retornoArray[1])
-                    - (Double.parseDouble(retornoArray[1]) * 10 / 100);
-            // Se genera el precio final de facturación
-            facturacion = precioCuotaDescuento + descuentoExcursiones;
-            // Se manda el resultado a la vista
-            respuesta += "\n El socio factura " + facturacion
-                    + " euros mensuales. (10% de dto. incluido en el precio final.)";
-        } else if (tipoSocio.equals("Infantil")) {
-            // Aplicamos un descuento de la cuota mensual 50%
-            Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 50 / 100);
-            respuesta += "\n    - Coste de la cuota: " + precioCuotaDescuento + " euros.";
-            // Obtener listado de escursiones y precio:
-            // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
-            // usar try para comprobar posibles excepciones.
-            try {
-                retornoArray = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-            respuesta += retornoArray[0];
-            // Se genera el precio final de facturación
-            facturacion = precioCuotaDescuento + Double.parseDouble(retornoArray[1]);
-            // Se manda el resultado a la vista
-            respuesta += "\n El socio factura " + facturacion + " euros mensuales.";
-        }
-        RespView.respuestaControllerView(respuesta);
-        // Volvemos al menu principal de la gestión de los socios.
+        });
     }
 
     // Metodo para seleccionar el seguro de un socio estandar.
@@ -663,7 +433,6 @@ public class SocioController {
         // Tratamiento del seguro
         TipoSeguro tipoSeguro = null;
         String retornoSeguro = cbTipoSeguro.getValue();
-
         if (retornoSeguro.startsWith("1")) {
             tipoSeguro = TipoSeguro.BASICO;
         } else if (retornoSeguro.startsWith("2")) {
@@ -671,7 +440,230 @@ public class SocioController {
         } else {
             return null;
         }
-
         return new SeguroModel(tipoSeguro);
+    }
+
+    @FXML
+    public void facturaMensualSocio() {
+        taTodosLosSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                tInfo1.setText("Calculando ...");
+                // Inicializamos la tabla de facturación
+                taConceptoFacturacion.setCellValueFactory(cellData -> {
+                    Object item = cellData.getValue();
+                    if (item instanceof String[]) {
+                        String[] values = (String[]) item;
+                        return new SimpleStringProperty(values[0]);
+                    }
+                    return null;
+                });
+                taCosteFacturacion.setCellValueFactory(cellData -> {
+                    Object item = cellData.getValue();
+                    if (item instanceof String[]) {
+                        String[] values = (String[]) item;
+                        return new SimpleStringProperty(values[1]);
+                    }
+                    return null;
+                });
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() {
+                        try {
+                            String[] conceptoStrings = {};
+                            ArrayList<String[]> conceptosArrayList = new ArrayList<>();
+                            int numeroSocio = ((SocioModel) newSelection).getNumeroSocio();
+                            String tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
+                            Double facturacion = 0.0;
+                            final Double cuotaMensual = 10.00;
+
+                            if (tipoSocio.equals("Estandar")) {
+                                //Cuota mensual
+                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() };
+                                conceptosArrayList.add(conceptoStrings);
+
+                                //Precio seguro
+                                Double precioSeguro = 0.0;
+                                try {
+                                    precioSeguro = SocioEstandarModel.getSocioPorNumeroSocio(numeroSocio).getSeguro().getPrecio();
+                                } catch (Exception e) {
+                                    NotificacionView.Notificacion("ERROR", "Error encontrado", "Fallo en la ejecución del programa: " + e);
+                                }
+                                conceptoStrings = new String[] { "Seguro", precioSeguro.toString() };
+                                conceptosArrayList.add(conceptoStrings);
+                                //
+                                taResultadoFacturacion.setItems(FXCollections.observableArrayList(conceptosArrayList));
+                                // Coste de la cuota
+                                // respuesta += "\n - Coste de la cuota: " + cuotaMensual + " euros.";
+                                // Obtenemos el precio del seguro contratado desde el modelo.
+                                // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
+                                // usar try para comprobar posibles excepciones.
+
+                                // Obtener listado de excursiones y precio:
+                                // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
+                                // usar try para comprobar posibles excepciones.
+                                try {
+                                    // = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
+                                } catch (Exception e) {
+                                    NotificacionView.Notificacion("ERROR", "Error encontrado",
+                                            "Fallo en la ejecución del programa: " + e);
+                                }
+
+                                // respuesta += retornoArray[0];
+
+                                // // Precio del seguro.
+                                // respuesta += "\n - Coste del seguro: " + precioSeguro + " euros.";
+                                // // Se genera el precio final de facturación
+                                // facturacion = cuotaMensual + precioSeguro +
+                                // Double.parseDouble(retornoArray[1]);
+                                // // Se manda el resultado a la vista
+                                // respuesta += "\n El socio factura " + facturacion + " euros mensuales.";
+                                // } else if (tipoSocio.equals("Federado")) {
+                                // // Aplicamos un despues de la cuota mensual 5%
+                                // Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 5 / 100);
+                                // // Obtener listado de escursiones y precio:
+                                // // Al intentar obtener datos de un medio exteno, en este caso la BBDD,
+                                // debemos
+                                // // usar try para comprobar posibles excepciones.
+                                // try {
+                                // retornoArray = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
+                                // } catch (Exception e) {
+                                // RespView.excepcionesControllerView(e.getMessage());
+                                // }
+
+                                // respuesta += retornoArray[0];
+                                // // Se calcula el descuento de las escursiones de este socio. 10%
+                                // Double descuentoExcursiones = Double.parseDouble(retornoArray[1])
+                                // - (Double.parseDouble(retornoArray[1]) * 10 / 100);
+                                // // Se genera el precio final de facturación
+                                // facturacion = precioCuotaDescuento + descuentoExcursiones;
+                                // // Se manda el resultado a la vista
+                                // respuesta += "\n El socio factura " + facturacion
+                                // + " euros mensuales. (10% de dto. incluido en el precio final.)";
+                                // } else if (tipoSocio.equals("Infantil")) {
+                                // // Aplicamos un descuento de la cuota mensual 50%
+                                // Double precioCuotaDescuento = cuotaMensual
+                                // - (cuotaMensual * 50 / 100);
+                                // respuesta += "\n - Coste de la cuota: " + precioCuotaDescuento + " euros.";
+                                // // Obtener listado de escursiones y precio:
+                                // // Al intentar obtener datos de un medio exteno, en este caso la BBDD,
+                                // debemos
+                                // // usar try para comprobar posibles excepciones.
+                                // try {
+                                // retornoArray = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
+                                // } catch (Exception e) {
+                                // RespView.excepcionesControllerView(e.getMessage());
+                                // }
+                                // respuesta += retornoArray[0];
+                                // // Se genera el precio final de facturación
+                                // facturacion = precioCuotaDescuento + Double.parseDouble(retornoArray[1]);
+                                // // Se manda el resultado a la vista
+                                // respuesta += "\n El socio factura " + facturacion + " euros mensuales.";
+                            }
+                            return null;
+                        } catch (Exception e) {
+                            Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
+                                    "Error en el controlador: " + e.getMessage()));
+                        } finally {
+                            Platform.runLater(() -> tInfo1.setText(""));
+                        }
+                        return null;
+                    }
+                };
+                Thread thread = new Thread(task);
+                thread.setDaemon(true);
+                thread.start();
+            }
+        });
+    }
+
+    // Este metodo permite filtrar usuarios en la tabla usando tres CheckBox con
+    // fx:id
+    // filterEstandar // filterFederado // filterInfantil
+    public void filtrarSocioPorTipoEnTabla() {
+        filterEstandar.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
+        filterFederado.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
+        filterInfantil.selectedProperty().addListener((observable, oldValue, newValue) -> applyFilter());
+    }
+
+    // Este metodo permite filtrar usuarios en la tabla usando un TextField con
+    // fx:id
+    // tfNumeroSocio
+    public void filtrarSocioPorNumeroEnTabla() {
+        tfNumeroSocio.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(socio -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String numeroSocio = String.valueOf(((SocioModel) socio).getNumeroSocio());
+                return numeroSocio.contains(newValue);
+            });
+        });
+    }
+
+    // Este metodo permite cargar usuarios en la tabla, el nombre de la tabla,
+    // columnas y aviso de carga de datos son:
+    // tabla-id:taTodosLosSocios // column-id:taNumeroSocio
+    // column-id:taNombre // text-id:tInfo
+    @FXML
+    public void cargarLosSociosEnTabla() {
+        tInfo.setText("Cargando datos ...");
+        // Iniciamos la tabla
+        taNumeroSocio.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof SocioEstandarModel) {
+                SocioEstandarModel socio = (SocioEstandarModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            } else if (item instanceof SocioFederadoModel) {
+                SocioFederadoModel socio = (SocioFederadoModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            } else if (item instanceof SocioInfantilModel) {
+                SocioInfantilModel socio = (SocioInfantilModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            }
+            return null;
+        });
+        taNombre.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof SocioEstandarModel) {
+                SocioEstandarModel socio = (SocioEstandarModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            } else if (item instanceof SocioFederadoModel) {
+                SocioFederadoModel socio = (SocioFederadoModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            } else if (item instanceof SocioInfantilModel) {
+                SocioInfantilModel socio = (SocioInfantilModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            }
+            return null;
+        });
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    // Obtenemos los objetos de los socios
+                    ArrayList<SocioEstandarModel> socioEstandarModels = SocioEstandarModel.obtenerSocios();
+                    ArrayList<SocioFederadoModel> socioFederadoModels = SocioFederadoModel.obtenerSocios();
+                    ArrayList<SocioInfantilModel> socioInfantilModels = SocioInfantilModel.obtenerSocios();
+                    // Create an ObservableList and add the items to it
+                    ObservableList<Object> allSocios = FXCollections.observableArrayList();
+                    allSocios.addAll(socioEstandarModels);
+                    allSocios.addAll(socioFederadoModels);
+                    allSocios.addAll(socioInfantilModels);
+                    // Objetos filtrados si es necesario
+                    filteredData = new FilteredList<>(allSocios);
+                    // Añadimos los socios a la tabla
+                    taTodosLosSocios.setItems(filteredData);
+                } catch (Exception e) {
+                    Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
+                            "Error en el controlador: " + e.getMessage()));
+                } finally {
+                    Platform.runLater(() -> tInfo.setText(""));
+                }
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 }
