@@ -13,6 +13,7 @@ public class Main extends Application {
         AppController app = new AppController();
         app.AppWindowsView();
     }
+
     public static void main(String[] args) {
         launch(args);
     }
