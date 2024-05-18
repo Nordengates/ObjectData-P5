@@ -25,6 +25,6 @@
           <TableColumn fx:id="taTipoSocio" prefWidth="155.0" text="Tipo de socio" />
         </columns>
       </TableView>
-      <Text fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="90.13671875" />
+      <Text fx:id="taInfo" fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="130" />
    </children>
 </AnchorPane>
