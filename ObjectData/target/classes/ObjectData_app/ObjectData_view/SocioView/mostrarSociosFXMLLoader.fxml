@@ -20,11 +20,10 @@
       <CheckBox fx:id="filterInfantil" layoutX="305.0" layoutY="62.0" mnemonicParsing="false" selected="true" text="Socios infantiles" />
       <TableView fx:id="taTodosLosSocios" layoutX="8.0" layoutY="89.0" prefHeight="385.0" prefWidth="704.0">
         <columns>
-          <TableColumn fx:id="taNumeroSocio" prefWidth="140.0" text="Número socio" />
-          <TableColumn fx:id="taNombre" prefWidth="408.0" text="Nombre" />
-          <TableColumn fx:id="taTipoSocio" prefWidth="155.0" text="Tipo de socio" />
+          <TableColumn fx:id="taNumeroSocio" prefWidth="254.0" text="Número socio" />
+          <TableColumn fx:id="taNombre" prefWidth="449.0" text="Nombre" />
         </columns>
       </TableView>
-      <Text fx:id="taInfo" fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="130" />
+      <Text fx:id="tInfo" fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="130" />
    </children>
 </AnchorPane>

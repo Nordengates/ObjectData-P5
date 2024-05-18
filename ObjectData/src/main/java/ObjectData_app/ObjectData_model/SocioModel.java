@@ -62,42 +62,18 @@ public abstract class SocioModel {
         if (socio != null) {
             return socio;
         }
-    
         // Comprobar en la lista de socios federados
         socio = SocioFederadoModel.getSocioPorNumeroSocio(numeroSocio);
         if (socio != null) {
             return socio;
         }
-    
         // Comprobar en la lista de socios infantiles
         socio = SocioInfantilModel.getSocioPorNumeroSocio(numeroSocio);
         if (socio != null) {
             return socio;
         }
-    
         // Si no se encuentra en ninguna lista, devolver null
         return null;
-    }
-
-    ////////////////// Metodo para listar todos los socios
-    public static String[] listarSocios() {
-        StringBuilder listado = new StringBuilder();
-        int contador = 0;
-        String[] datos = null;
-        // Se obtienen los datos desde la tabla socio estandar.
-        datos = SocioEstandarModel.listarSocios(contador);
-        listado.append(datos[0]);
-        contador = Integer.parseInt(datos[1]);
-        // Se obtienen los datos desde la tabla socio federados.
-        datos = SocioFederadoModel.listarSocios(contador);
-        listado.append(datos[0]);
-        contador = Integer.parseInt(datos[1]);
-        // Se obtienen los datos desde la tabla socio estandar.
-        datos = SocioInfantilModel.listarSocios(contador);
-        listado.append(datos[0]);
-        contador = Integer.parseInt(datos[1]);
-        // Se devuelven los datos obtenidos
-        return new String[] { listado.toString(), String.valueOf(contador) };
     }
 
     /////////////////// Metodo para obtener el tipo de socio por numero de socio.
