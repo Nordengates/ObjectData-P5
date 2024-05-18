@@ -134,39 +134,6 @@ public class InscripcionController {
         taExcursion.setItems(observableList);
         taSocios.setItems(observableList2);
         
-        int numeroSocio = 0;
-        //String respuesta = InscView.formCrearInscripcionView();
-        int numeroExcursion = 0;
-        //if (respuesta == null || respuesta.isEmpty()) {
-          //  RespView.respuestaControllerView("Operación cancelada.");
-            //return;
-        //} else if (respuesta.equals("N")) {
-          //  SocioController.crearNuevoSocio();
-           // return;
-        //} else if (respuesta.equals("S")) {
-          //  String retorno = InscView.formSeguirCrearInscripcionView();
-            //if (retorno.isEmpty()) {
-              //  RespView.respuestaControllerView("Número de socio vacío. Operación cancelada.");
-                //return;
-           // }
-
-           // numeroSocio = Integer.parseInt(retorno);
-
-       // } else {
-         //   RespView.excepcionesControllerView("Debes introducir 'S' o 'N'. Operación cancelada.");
-           // return;
-        //}
-
-        // Si se llega aquí, significa que el usuario indicó que el socio existe y se le
-        // pide ingresar el número de socio
-        // Comprueba si el socio existe
-        try {
-            if (!SocioModel.comprobarSocioPorNumeroSocio(numeroSocio)) {
-                return;
-            }
-        } catch (Exception e) {
-            //RespView.excepcionesControllerView(e.getMessage());
-        }
              
         // Obtiene y muestra el listado de excursiones
         List<ExcursionModel> listadoExcursiones = ExcursionModel.obtenerListadoExcursiones();
@@ -192,10 +159,15 @@ public class InscripcionController {
         // Genera un número de inscripción aleatorio
         int numeroInscripcion = Integer.parseInt("9" + generarID());
         //RespView.respuestaControllerView("- Número de inscripción generado: " + numeroInscripcion);
+// Obtener el texto de los TextField
+String textoNumSocio = tfNumSocio.getText();
+String textoNumExc = tfNumExc.getText();
 
-        // Crea la inscripción
-        InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion, numeroSocio, numeroExcursion,
-                new Date());
+// Crear un objeto InscripcionModel, convirtiendo los textos a números
+InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion,
+                                                    Integer.parseInt(textoNumSocio),
+                                                    Integer.parseInt(textoNumExc),
+                                                    new Date());
         try {
             String respuest = InscripcionModel.crearInscripcion(inscripcion);
           //  RespView.respuestaControllerView(respuest);
