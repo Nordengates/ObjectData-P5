@@ -21,23 +21,21 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="tfNombreExcursion" layoutX="89.0" layoutY="158.0" prefHeight="25.0" prefWidth="101.0" text="" />
+      <TextField fx:id="tfNumSocio" layoutX="89.0" layoutY="158.0" prefHeight="25.0" prefWidth="101.0" text="" />
       <Label fx:id="label1" contentDisplay="CENTER" layoutX="103.0" layoutY="228.0" prefHeight="25.0" prefWidth="101.0" text="Numero Exc" textOverrun="CLIP" wrapText="true">
          <font>
             <Font size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="tfNumDias" layoutX="89.0" layoutY="255.0" prefHeight="25.0" prefWidth="101.0" text="" />
-      <Button fx:id="btCrear" layoutX="83.0" layoutY="353.0" mnemonicParsing="false"  prefHeight="25.0" prefWidth="140.0" text="Crear inscripción" />
-      <Button fx:id="btCrear2" layoutX="566.0" layoutY="255.0" mnemonicParsing="false" onAction="#crearInscripcion" prefHeight="25.0" prefWidth="140.0" text="Ver excursiones" />
-      <Button fx:id="btCrear3" layoutX="566.0" layoutY="52.0" mnemonicParsing="false"  prefHeight="25.0" prefWidth="140.0" text="Ver socios" />
+      <TextField fx:id="tfNumExc" layoutX="89.0" layoutY="255.0" prefHeight="25.0" prefWidth="101.0" text="" />
+      <Button fx:id="btCrear" onAction="#handleCrearInscripcion" layoutX="83.0" layoutY="353.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="140.0" text="Crear inscripción" />
       <TableView fx:id="taSocios" layoutX="334.0" layoutY="89.0" prefHeight="162.0" prefWidth="372.0">
         <columns>
           <TableColumn fx:id="taN" prefWidth="104.0" text="Numero" />
           <TableColumn fx:id="taD" prefWidth="267.0" text="Nombre" />
         </columns>
       </TableView>
-      <Text layoutX="318.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tabla Socios" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
+      <Text layoutX="388.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tabla Socios" textAlignment="CENTER" underline="true" wrappingWidth="297.4700927734375">
          <font>
             <Font size="16.0" />
          </font>
@@ -48,7 +46,7 @@
             <TableColumn fx:id="taDesc" prefWidth="267.0" text="Nombre" />
          </columns>
       </TableView>
-      <Text layoutX="302.0" layoutY="273.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tabla excursiones" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
+      <Text layoutX="407.0" layoutY="273.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tabla excursiones" textAlignment="CENTER" underline="true" wrappingWidth="258.8033447265625">
          <font>
             <Font size="16.0" />
          </font>
