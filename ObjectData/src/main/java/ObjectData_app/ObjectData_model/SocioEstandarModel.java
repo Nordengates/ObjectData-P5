@@ -1,6 +1,6 @@
 package ObjectData_app.ObjectData_model;
 
-import ObjectData_app.ObjectData_model.ObjectData_Hibernate.socioEstandarHib;
+import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioEstandarHib;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class SocioEstandarModel extends SocioModel {
 
     /////////////////// Metodo para crear la session de hibernate
     private static void crearSessionHib() {
-        sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(socioEstandarHib.class).buildSessionFactory();
+        sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(SocioEstandarHib.class).buildSessionFactory();
         session = sessionFactory.openSession();
     }
 
@@ -37,7 +37,7 @@ public class SocioEstandarModel extends SocioModel {
         try {
             // Iniciamos una transacción en la sesión
             session.beginTransaction();
-            socioEstandarHib socio = new socioEstandarHib(
+            SocioEstandarHib socio = new SocioEstandarHib(
                     socioEstandar.getNumeroSocio(), // Obtenemos el numero de socio desde el objeto socioEstandar
                                                     // //Columna numeroSocio
                     socioEstandar.getNombre(), // Obtenemos el nombre de socio desde el objeto socioEstandar //Columna
@@ -67,13 +67,13 @@ public class SocioEstandarModel extends SocioModel {
     public static SocioEstandarModel getSocioPorNumeroSocio(int numeroSocio) {
         // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
-        socioEstandarHib socio = null;
+        SocioEstandarHib socio = null;
         try {
             // Iniciamos una transacción en la sesión
             session.beginTransaction();
             // Obtenemos el socio por numero de socio
             socio = session
-                    .createQuery("FROM socioEstandarHib WHERE numeroSocio = :numeroSocio", socioEstandarHib.class)
+                    .createQuery("FROM SocioEstandarHib WHERE numeroSocio = :numeroSocio", SocioEstandarHib.class)
                     .setParameter("numeroSocio", numeroSocio)
                     .uniqueResult();
         } catch (Exception e) {
@@ -128,12 +128,12 @@ public class SocioEstandarModel extends SocioModel {
     public static double obtenerPrecioSeguroPorNumeroSocio(int numeroSocio) {
         // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
-        socioEstandarHib socio = null;
+        SocioEstandarHib socio = null;
         try {
             // Iniciamos una transacción en la sesión
             session.beginTransaction();
             socio = session
-                    .createQuery("FROM socioEstandarHib WHERE numeroSocio = :numeroSocio", socioEstandarHib.class)
+                    .createQuery("FROM SocioEstandarHib WHERE numeroSocio = :numeroSocio", SocioEstandarHib.class)
                     .setParameter("numeroSocio", numeroSocio)
                     .uniqueResult();
         } catch (Exception e) {
@@ -179,13 +179,13 @@ public class SocioEstandarModel extends SocioModel {
         // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
         // Alamacenamos los objetos devuelvos por la base de datos que son de tipo Hib
-        List<socioEstandarHib> sociosEstandarHib = null;
+        List<SocioEstandarHib> sociosEstandarHib = null;
         // Almacenamos los objetos transformados de Hub a Model.
         ArrayList<SocioEstandarModel> sociosEstandarModel = new ArrayList<>();
         try {
             // Iniciamos una transacción en la sesión
             session.beginTransaction();
-            sociosEstandarHib = session.createQuery("FROM socioEstandarHib", socioEstandarHib.class).list();
+            sociosEstandarHib = session.createQuery("FROM SocioEstandarHib", SocioEstandarHib.class).list();
         } catch (Exception e) {
             // Devolvemos el error aguas arriba en las clases
             throw e;
@@ -196,7 +196,7 @@ public class SocioEstandarModel extends SocioModel {
             sessionFactory.close();
         }
         //Pasamos los datos de sociosEstandarHib a sociosEstandarModel
-        for (socioEstandarHib socio : sociosEstandarHib) {
+        for (SocioEstandarHib socio : sociosEstandarHib) {
             sociosEstandarModel.add( new SocioEstandarModel(
                 socio.getNumeroSocio(),
                 socio.getNombre(),

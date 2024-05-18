@@ -23,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
@@ -69,10 +70,21 @@ public class SocioController {
     private TableColumn<Object, Integer> colNumeroSocio;
     @FXML
     private TableColumn<Object, String> colNombre;
-    // FIN 
+    // FIN
+
+    //Componentes de 'Socio Federado'
+    @FXML
+    private TextField tfNombreSocioFederado;
+    @FXML
+    private TextField tfDniSocioFederado;
+    @FXML
+    private Button btCrearSocioFederado;
+    @FXML 
+    private ComboBox<String> cbFederaciones;
 
     @FXML
    public void initialize() {
+        cargarFederaciones();
         if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
 
         // Configurar las columnas de la tabla de eliminación de socios
@@ -306,84 +318,72 @@ public class SocioController {
         } while (!todoOk);
     }
 
-    public static void crearSocioFederado() {
-        // Atributos
-        String nombre; // El primer parametro del array sera el nombre
-        String NIF; // El segundo parametro del array es el DNI
-        int numeroSocio; // Para almacenar el numero de socio.
+    @FXML
+    private void crearSocioFederado() {
+        String nombre = tfNombreSocioFederado.getText();
+        String NIF = tfDniSocioFederado.getText();
+        int numeroSocio;
         boolean todoOk = false;
-        String[] listaFederaciones = null;
         FederacionModel federacion = null;
-        // Imprimitos el titulo de la función.
-        RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR UN SOCIO FEDERADO --");
-        // Creamos el bucle para el metodo.
-        do {
-            // Pedimos el nombre del socio.
-            nombre = SociView.obtenerNombreSocio();
-            // Si nombre esta vacio salimos.
-            if (nombre.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            }
-            // Pedimos el NIF
-            NIF = SociView.obtenerDNISocio();
-            // Si NIF esta vacio salimos.
-            if (NIF.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            }
-            // Pido el listado de federaciones y el numero de federaciones disponibles;
-            try {
-                listaFederaciones = FederacionModel.obtenerListadoFederacion();
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-            int opcionesDiponibles = Integer.parseInt(listaFederaciones[1]);
-            // Se genera el control de excepcion para opcion seleccionada no valida.
-            int seleccion = 0;
-            boolean opcionOk = false;
-            do {
-                String opcion = SociView.selectorFederacionesView(listaFederaciones[0]);
-                // Si la opcion esta vacia salimos.
-                if (opcion.isEmpty()) {
-                    RespView.respuestaControllerView("Operación cancelada.");
-                    // No se agrega al socio, así que simplemente salimos del bucle.
-                    break;
-                } else if (opcion.matches("\\d+")) { // Verifica si la opción es un número entero
-                    seleccion = Integer.parseInt(opcion);
-                } else {
-                    // Si no es un número entero, muestra un mensaje de error
-                    RespView.excepcionesControllerView("Opcion no valida, debe introducir un valor numerico.");
-                    continue;
-                }
-                if (seleccion <= 0 || seleccion >= opcionesDiponibles) {
-                    RespView.excepcionesControllerView("Opcion no valida, seleccione una opción disponible.");
-                    continue;
-                } else {
-                    opcionOk = true;
-                    continue;
-                }
-            } while (!opcionOk);
-            // Método para generar un número de socio aleatorio
-            numeroSocio = Integer.parseInt("6" + generarID()); // Número de socio
-            RespView.respuestaControllerView("# Numero de socio generado: " + numeroSocio);
-            // Con este metodo del modelo obtengo el objeto seleccionado por el usuario
-            try {
-                federacion = FederacionModel.obtenerFederacion(seleccion);
+    
+        if (nombre.isEmpty() || NIF.isEmpty()) {
+            NotificacionView.Notificacion("ERROR", "Campos vacíos", "Por favor, llene todos los campos.");
+            return;
+        }
+    
+        String seleccion = cbFederaciones.getValue(); // Obtener el valor seleccionado del ComboBox
+    
+        if (seleccion == null) {
+            NotificacionView.Notificacion("ERROR", "Federación no seleccionada", "Por favor, seleccione una federación.");
+            return;
+        }
+    
+        try {
+            //federacion = FederacionModel.obtenerFederacion(seleccion); // Obtener el objeto FederacionModel
+        } catch (Exception e) {
+            NotificacionView.Notificacion("ERROR", "Error al obtener federación", e.getMessage());
+            return;
+        }
+    
+        // Generar el número de socio y mostrar notificación
+        numeroSocio = Integer.parseInt("6" + generarID());
+        NotificacionView.Notificacion("INFO", "Número de socio", "# Número de socio generado: " + numeroSocio);
+    
+        // Crear el objeto SocioFederadoModel
+        SocioFederadoModel socio = new SocioFederadoModel(numeroSocio, nombre, NIF, federacion.getCodigo());
+    
+        try {
+            socio.crearSocioFederado(socio);
+            NotificacionView.Notificacion("EXITO", "Socio creado", "Se ha creado el socio federado correctamente.");
+            todoOk = true;
+        } catch (Exception e) {
+            NotificacionView.Notificacion("ERROR", "Error al crear socio", e.getMessage());
+        }
+    }
+    
 
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
+    private void cargarFederaciones() {
+        String[] listaFederaciones;
+        try {
+            listaFederaciones = FederacionModel.obtenerListadoFederacion();
+            String listado = listaFederaciones[0];
+            String[] federaciones = listado.split("\n");
+
+            // Crear una lista observable y agregar las federaciones
+            ObservableList<String> observableFederaciones = FXCollections.observableArrayList();
+
+            for (String federacion : federaciones) {
+                if (!federacion.trim().isEmpty() && !federacion.equals("- Sin datos.")) {
+                    observableFederaciones.add(federacion.trim());
+                }
             }
-            String codigoFederacion = federacion.getCodigo();
-            // Creamos el objeto con los datos recolectados.
-            SocioFederadoModel socio = new SocioFederadoModel(numeroSocio, nombre, NIF, codigoFederacion);
-            // Enviamos la información al modelo para que añada el socio a la
-            try {
-                socio.crearSocioFederado(socio);
-                RespView.respuestaControllerView("Se ha creado el socio federado correctamente.");
-                todoOk = true;
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-        } while (!todoOk);
+
+            // Establecer la lista observable en el ComboBox
+            cbFederaciones.setItems(observableFederaciones);
+
+        } catch (Exception e) {
+            NotificacionView.Notificacion("ERROR", "Error al cargar federaciones", e.getMessage());
+        }
     }
 
     public static void crearSocioInfantil() {
