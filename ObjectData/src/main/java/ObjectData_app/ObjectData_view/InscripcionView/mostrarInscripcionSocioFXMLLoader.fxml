@@ -25,7 +25,7 @@
           <TableColumn fx:id="taNumeroSocio" prefWidth="109.0" text="Número socio" />
           <TableColumn fx:id="taNombre" prefWidth="292.0" text="Nombre" />
           <TableColumn fx:id="taTipoSocio" prefWidth="81.0" text="Tipo de socio" />
-            <TableColumn fx:id="taNombre1" prefWidth="228.0" text="Excursión" />
+            <TableColumn fx:id="taNombre1" prefWidth="228.0" text="Excursiones" />
         </columns>
       </TableView>
       <Text fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="90.13671875" />
