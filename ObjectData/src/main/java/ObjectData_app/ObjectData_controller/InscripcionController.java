@@ -167,7 +167,7 @@ public class InscripcionController {
         } catch (Exception e) {
             //RespView.excepcionesControllerView(e.getMessage());
         }
-
+             
         // Obtiene y muestra el listado de excursiones
         List<ExcursionModel> listadoExcursiones = ExcursionModel.obtenerListadoExcursiones();
         //String retornoExcursion = InscView.formListadoExcursionesView(listadoExcursiones[0]);

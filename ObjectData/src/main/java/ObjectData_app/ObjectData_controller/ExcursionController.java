@@ -127,7 +127,24 @@ public class ExcursionController {
 
     @FXML
     private void buscarExcursiones() {
-        inicializarTabla();
+        
+        taNumeroExcursion.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
+        taDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        taFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        taPrecio.setCellValueFactory(new PropertyValueFactory<>("precioInscripcion"));
+        taNumDias.setCellValueFactory(new PropertyValueFactory<>("numeroDias"));
+
+        taResultadoExcursion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Integer contenidoCelda = newSelection.getNumeroExcursion();
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                final ClipboardContent content = new ClipboardContent();
+                content.putString(contenidoCelda.toString());
+                clipboard.setContent(content);
+                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
+            }
+        });
+
         tInfo.setText("Buscando datos ...");
         LocalDate fechaInicioSeleccionada = tfFechaInicioExcursion.getValue();
         LocalDate fechaFinSeleccionada = tfFechaFinExcursion.getValue();
@@ -160,24 +177,6 @@ public class ExcursionController {
         Thread thread = new Thread(task);
         thread.setDaemon(true);
         thread.start();
-    }
-    public void inicializarTabla() {
-        taNumeroExcursion.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
-        taDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        taFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-        taPrecio.setCellValueFactory(new PropertyValueFactory<>("precioInscripcion"));
-        taNumDias.setCellValueFactory(new PropertyValueFactory<>("numeroDias"));
-
-        taResultadoExcursion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                Integer contenidoCelda = newSelection.getNumeroExcursion();
-                final Clipboard clipboard = Clipboard.getSystemClipboard();
-                final ClipboardContent content = new ClipboardContent();
-                content.putString(contenidoCelda.toString());
-                clipboard.setContent(content);
-                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
-            }
-        });
     }
 }
 

@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.SocioController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" style="-fx-background-color: #F4F6F7dd;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ObjectData_app.ObjectData_controller.SocioController">
    <children>
-      <TableView fx:id="taTodosLosSocios" prefHeight="480.0" prefWidth="720.0">
+      <Text layoutX="174.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="LISTADO DE SOCIOS" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Text>
+      <Text layoutX="14.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtros:" wrappingWidth="90.13671875" />
+      <CheckBox fx:id="filterEstandar" layoutX="59.0" layoutY="62.0" mnemonicParsing="false" selected="true" text="Socios estandar" />
+      <CheckBox fx:id="filterFederado" layoutX="178.0" layoutY="62.0" mnemonicParsing="false" selected="true" text="Socios federados" />
+      <CheckBox fx:id="filterInfantil" layoutX="305.0" layoutY="62.0" mnemonicParsing="false" selected="true" text="Socios infantiles" />
+      <TableView fx:id="taTodosLosSocios" layoutX="8.0" layoutY="89.0" prefHeight="385.0" prefWidth="704.0">
         <columns>
-          <TableColumn fx:id="taNumeroSocio" prefWidth="157.0" text="Número socio" />
-          <TableColumn fx:id="taNombre" prefWidth="381.0" text="Nombre" />
-          <TableColumn fx:id="taTipoSocio" prefWidth="181.0" text="Tipo de socio" />
+          <TableColumn fx:id="taNumeroSocio" prefWidth="140.0" text="Número socio" />
+          <TableColumn fx:id="taNombre" prefWidth="408.0" text="Nombre" />
+          <TableColumn fx:id="taTipoSocio" prefWidth="155.0" text="Tipo de socio" />
         </columns>
       </TableView>
+      <Text fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="90.13671875" />
    </children>
 </AnchorPane>

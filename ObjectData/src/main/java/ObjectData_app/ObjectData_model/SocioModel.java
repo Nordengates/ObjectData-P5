@@ -55,6 +55,30 @@ public abstract class SocioModel {
         return false;
     }
 
+    ////////////// Método para devover un socio existe mediante el numeroSocio
+    public static SocioModel obtenerSocioPorNumeroSocio(int numeroSocio) {
+        // Comprobar en la lista de socios estándar
+        SocioModel socio = SocioEstandarModel.getSocioPorNumeroSocio(numeroSocio);
+        if (socio != null) {
+            return socio;
+        }
+    
+        // Comprobar en la lista de socios federados
+        socio = SocioFederadoModel.getSocioPorNumeroSocio(numeroSocio);
+        if (socio != null) {
+            return socio;
+        }
+    
+        // Comprobar en la lista de socios infantiles
+        socio = SocioInfantilModel.getSocioPorNumeroSocio(numeroSocio);
+        if (socio != null) {
+            return socio;
+        }
+    
+        // Si no se encuentra en ninguna lista, devolver null
+        return null;
+    }
+
     ////////////////// Metodo para listar todos los socios
     public static String[] listarSocios() {
         StringBuilder listado = new StringBuilder();
