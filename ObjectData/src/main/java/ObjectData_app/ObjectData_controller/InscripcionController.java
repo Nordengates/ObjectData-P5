@@ -147,14 +147,7 @@ public class InscripcionController {
         //}
 
         // Comprueba si la excursión existe
-        try {
-            if (ExcursionModel.obtenerExcursionPorNumeroExcursion(numeroExcursion) == null) {
-                //RespView.excepcionesControllerView("Excursión no encontrada.");
-                return;
-            }
-        } catch (Exception e) {
-           // RespView.excepcionesControllerView(e.getMessage());
-        }
+        
 
         // Genera un número de inscripción aleatorio
         int numeroInscripcion = Integer.parseInt("9" + generarID());
