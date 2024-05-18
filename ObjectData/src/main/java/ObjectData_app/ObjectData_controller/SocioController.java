@@ -12,9 +12,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import ObjectData_app.ObjectData_view.NotificacionView;
-import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
@@ -39,6 +42,36 @@ public class SocioController {
     private TableColumn<Object, String> taNombre;
     @FXML
     private TableColumn<Object, String> taTipoSocio;
+
+    //Componentes de 'Eliminar Socio'
+    @FXML
+    private TextField tfNumeroSocioEliminar;
+    @FXML
+    private Button btBuscarSocioEliminar;
+    @FXML
+    private Label lbAvisoEliminacion;
+    @FXML 
+    private TableView<Object> tvTablaEliminarSocio;
+    @FXML
+    private TableColumn<Object, Integer> colNumeroSocio;
+    @FXML
+    private TableColumn<Object, String> colNombre;
+    // FIN 
+
+    @FXML
+    public void initialize() {
+        if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
+
+        // Configurar las columnas de la tabla de eliminación de socios
+        if(colNumeroSocio!=null) colNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
+        if(colNombre!=null) colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+    }
+
+    @FXML
+    public void initializeForm() {
+        if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
+        limpiarAvisoEliminacion();
+    }
 
     public void mostrarTodosLosSocios() {
         //Iniciamos la tabla
@@ -108,11 +141,6 @@ public class SocioController {
     @FXML
     private Button btCrear;
 
-    @FXML
-    public void initialize() {
-        cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
-    }
-
     // Método para generar un número de socio aleatorio
     public static int generarID() {
         Random rand = new Random();
@@ -164,14 +192,20 @@ public class SocioController {
         } while (!todoOk);
     }
 
-    public static void modificarSeguroSocioEstandar() {
+    public  void modificarSeguroSocioEstandar() {
         // Atributos
-        String retorno;
-        int numeroSocio = 0;
-        SocioEstandarModel socio = null;
+        String nombre = tfNombreSocioEstandar.getText();
+        String NIF = tfDniSocioEstandar.getText();
+        String tipoSeguroSeleccionado = cbTipoSeguro.getValue();
+
+        if (nombre.isEmpty() || NIF.isEmpty() || tipoSeguroSeleccionado == null) {
+            NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, completa todos los campos.");
+            return;
+        }
+        int numeroSocio;
         boolean todoOk = false;
         // Imprimitos el titulo de la función.
-        RespView.tituloDeLaFuncion("-- FORMULARIO PARA MODIFICAR EL TIPO DE SEGURO --");
+        //RespView.tituloDeLaFuncion("-- FORMULARIO PARA MODIFICAR EL TIPO DE SEGURO --");
         // Bucle de logica para comprobar datos.
         do {
             // Pedimos el nombre del socio.
@@ -338,75 +372,110 @@ public class SocioController {
         }
     }
 
-    public static void eliminarSocio() {
-        // Atributos
-        String numeroSocioReturn = null;
+    @FXML
+    private void accionBuscarSocioEliminar(){
+        limpiarAvisoEliminacion();
+        tvTablaEliminarSocio.getItems().clear();
+        String input = tfNumeroSocioEliminar.getText();
+
+        //Validaciones 
+        if (input.isEmpty()) {
+            mostrarAvisoEliminacion("El campo de número de socio está vacío.");
+            return;
+        }
+        if (!input.matches("\\d+")) {
+            mostrarAvisoEliminacion("El número de socio debe ser un valor numérico.");
+            return;
+        }
+
+        int numeroSocio = Integer.parseInt(input);
+        SocioModel socio = SocioModel.obtenerSocioPorNumeroSocio(numeroSocio);
+
+        if (socio != null) {
+            tvTablaEliminarSocio.getItems().clear();
+            tvTablaEliminarSocio.getItems().add(socio);
+        } else {
+            mostrarAvisoEliminacion("No se encontró ningún socio con el número " + numeroSocio);
+        }
+
+    }
+
+    private void mostrarAvisoEliminacion(String warning){
+        if(lbAvisoEliminacion!=null) lbAvisoEliminacion.setText(warning);
+    }
+
+    private void limpiarAvisoEliminacion(){
+        if(lbAvisoEliminacion!=null) lbAvisoEliminacion.setText("");
+    } 
+
+    @FXML
+    public void accionEliminarSocio() {
         String tipoSocio = null;
         int numeroSocio = 0;
         boolean inscritoEnExcursion = false;
-        Boolean todoOk = false;
-        // Imprimo en pantalla el titulo del metodo
-        RespView.tituloDeLaFuncion("-- ELIMINAR UN SOCIO --");
-        // Comienza el bucle para la logica del metodo
-        do {
-            numeroSocioReturn = SociView.obtenerNumeroSocio();
-            // Verificar si la cadena numeroSocio está vacía
-            if (numeroSocioReturn.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            } else if (numeroSocioReturn.matches("\\d+")) { // Comprueba que el valor introducido es un numero entero.
-                numeroSocio = Integer.parseInt(numeroSocioReturn);
-                todoOk = true;
-            } else {
-                RespView.excepcionesControllerView("El número de usuario debe ser un entero.");
-                continue;
-            }
-        } while (!todoOk);
+    
+        // Obtener el socio seleccionado en la tabla
+        SocioModel socioSeleccionado = (SocioModel) tvTablaEliminarSocio.getSelectionModel().getSelectedItem();
+    
+        if (socioSeleccionado == null) {
+            // Mostrar mensaje si no se ha seleccionado ningún socio
+            mostrarAvisoEliminacion("Por favor, seleccione un socio para eliminar.");
+            return;
+        }
+    
+        numeroSocio = socioSeleccionado.getNumeroSocio();
+    
         // Verificar si el socio está inscrito en alguna excursión
         try {
             inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
         } catch (Exception e) {
-            RespView.excepcionesControllerView(e.getMessage());
+            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación");
+            return;
         }
+    
         if (inscritoEnExcursion) {
-            // Mostrar mensaje de que el socio está inscrito en una excursión y no puede ser
-            // eliminado
-            RespView.respuestaControllerView("El socio con número de socio " + numeroSocio
-                    + " está inscrito en una excursión y no puede ser eliminado.");
+            // Mostrar mensaje de que el socio está inscrito en una excursión y no puede ser eliminado
+            mostrarAvisoEliminacion("El socio con número de socio " + numeroSocio + " está inscrito en una excursión y no puede ser eliminado.");
+            return;
         }
+    
         // Verificar el tipo de socio y llamar al método eliminar correspondiente
         try {
             tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
         } catch (Exception e) {
-            RespView.excepcionesControllerView(e.getMessage());
+            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación");
+            return;
         }
-        if (tipoSocio == "Estandar") {
-            try {
-                SocioEstandarModel.eliminarSocioModel(numeroSocio);
-                RespView.respuestaControllerView(
-                        "El socio con número de socio " + numeroSocio + " ha sido eliminado correctamente.");
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
+
+        // Eliminar el socio según su tipo
+        try {
+            switch (tipoSocio) {
+                case "Estandar":
+                    SocioEstandarModel.eliminarSocioModel(numeroSocio);
+                    break;
+                case "Federado":
+                    SocioFederadoModel.eliminarSocioModel(numeroSocio);
+                    break;
+                case "Infantil":
+                    SocioInfantilModel.eliminarSocioModel(numeroSocio);
+                    break;
+                default:
+                    throw new Exception("No se ha podido identificar el tipo de socio.");
             }
-        } else if (tipoSocio.equals("Federado")) {
-            try {
-                SocioFederadoModel.eliminarSocioModel(numeroSocio);
-                RespView.respuestaControllerView(
-                        "El socio con número de socio " + numeroSocio + " ha sido eliminado correctamente.");
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-        } else if (tipoSocio.equals("Infantil")) {
-            try {
-                SocioInfantilModel.eliminarSocioModel(numeroSocio);
-                RespView.respuestaControllerView(
-                        "El socio con número de socio " + numeroSocio + " ha sido eliminado correctamente.");
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
-        } else {
-            RespView.excepcionesControllerView("No se ha podido identificar el tipo de socio.");
+
+            Alert alert = new Alert(AlertType.INFORMATION, "El socio con número de socio " + numeroSocio + " ha sido eliminado correctamente.", ButtonType.OK);
+            alert.setHeaderText(null);
+            alert.setTitle("Eliminación Exitosa");
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación");
         }
+    
+        // Actualizar la tabla después de eliminar el socio
+        tvTablaEliminarSocio.getItems().remove(socioSeleccionado);
     }
+    
 
     public static void facturaMensualSocio() {
         // Atributos
