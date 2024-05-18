@@ -7,7 +7,10 @@ import ObjectData_app.ObjectData_model.SocioModel;
 import ObjectData_app.ObjectData_view.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -17,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import ObjectData_app.ObjectData_model.ExcursionModel;
 
 import java.text.ParseException;
@@ -150,24 +154,68 @@ public class InscripcionController {
         
 
         // Genera un número de inscripción aleatorio
-        int numeroInscripcion = Integer.parseInt("9" + generarID());
+        
         //RespView.respuestaControllerView("- Número de inscripción generado: " + numeroInscripcion);
 // Obtener el texto de los TextField
 String textoNumSocio = tfNumSocio.getText();
 String textoNumExc = tfNumExc.getText();
+// Verificar si las cadenas no están vacías antes de continuar
 
 // Crear un objeto InscripcionModel, convirtiendo los textos a números
-InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion,
-                                                    Integer.parseInt(textoNumSocio),
-                                                    Integer.parseInt(textoNumExc),
-                                                    new Date());
-        try {
-            String respuest = InscripcionModel.crearInscripcion(inscripcion);
+//InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion,
+  //                                                  Integer.parseInt(textoNumSocio),
+    //                                                Integer.parseInt(textoNumExc),
+      //                                              new Date());
+       // try {
+         //   String respuest = InscripcionModel.crearInscripcion(inscripcion);
           //  RespView.respuestaControllerView(respuest);
-        } catch (Exception e) {
+        //} catch (Exception e) {
            // RespView.excepcionesControllerView(e.getMessage());
-        }
+        //}
     }
+  @FXML
+private void handleCrearInscripcion(ActionEvent event) {
+    // Obtener el texto de los campos de texto
+    String textoNumSocio = tfNumSocio.getText();
+    String textoNumExc = tfNumExc.getText();
+    int numeroInscripcion = Integer.parseInt("9" + generarID());
+
+    // Verificar si los campos no están vacíos
+    if (!textoNumSocio.isEmpty() && !textoNumExc.isEmpty()) {
+        try {
+            // Convertir los textos a números
+            int numeroSocio = Integer.parseInt(textoNumSocio);
+            int numeroExcursion = Integer.parseInt(textoNumExc);
+
+            // Crear un objeto InscripcionModel
+            InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion, numeroSocio, numeroExcursion, new Date());
+
+            // Llamar al método para crear la inscripción
+            String respuesta = InscripcionModel.crearInscripcion(inscripcion);
+
+            // Mostrar mensaje de éxito
+            NotificacionView.Notificacion("INFORMATION", "Éxito", "La inscripción se ha creado correctamente.");
+            // Cargar el formulario deseado en el mainContainer del contenedor principal
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/AppWindowsView.fxml"));
+            Parent root = loader.load();
+            mainContainer.setCenter(root);
+            return;
+            
+        } catch (NumberFormatException e) {
+            // Mostrar mensaje de error
+            NotificacionView.Notificacion("ERROR", "Error", "Los campos deben contener valores numéricos.");
+        } catch (Exception e) {
+            // Mostrar mensaje de error con la excepción
+            NotificacionView.Notificacion("ERROR", "Error", "Ha ocurrido un error: " + e.getMessage());
+        }
+    } else {
+        // Mostrar mensaje de error
+        NotificacionView.Notificacion("ERROR", "Error", "Los campos no pueden estar vacíos.");
+    }
+
+}
+
+
 
     public static void mostrarInscripcion() {
         boolean valoresComprobados = false;
