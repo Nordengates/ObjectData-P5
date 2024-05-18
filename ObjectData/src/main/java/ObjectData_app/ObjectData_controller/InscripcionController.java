@@ -2,17 +2,68 @@ package ObjectData_app.ObjectData_controller;
 
 //Se añade la vista principal
 import ObjectData_app.ObjectData_model.InscripcionModel;
+import ObjectData_app.ObjectData_model.SocioEstandarModel;
 import ObjectData_app.ObjectData_model.SocioModel;
 import ObjectData_app.ObjectData_view.*;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import ObjectData_app.ObjectData_model.ExcursionModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class InscripcionController {
+    @FXML
+    private Label label;
+
+    @FXML
+    private TextField tfNombreExcursion;
+
+    @FXML
+    private Label label1;
+
+    @FXML
+    private TextField tfNumDias;
+
+    @FXML
+    private Button btCrear;
+
+    @FXML
+    private Button btCrear2;
+
+    @FXML
+    private Button btCrear3;
+
+    @FXML
+    private TableView<SocioEstandarModel> taSocios;
+
+    @FXML
+    private TableColumn<SocioEstandarModel,Integer> taN;
+
+    @FXML
+    private TableColumn<SocioEstandarModel,String> taD;
+
+    @FXML
+    private TableView<ExcursionModel> taExcursion;
+
+    @FXML
+    private TableColumn<ExcursionModel, Integer> taNumero;
+
+    @FXML
+    private TableColumn<ExcursionModel, String> taDesc;
+
     // Se inicializan las vistas necasias.
 
     // Metodo para crear ID de inscripcion dinamicos
@@ -28,77 +79,122 @@ public class InscripcionController {
         return id;
     }
 
-    // Metodo para crear una Inscripcion
-    public static void crearInscripcion() {
-
-        int numeroSocio = 0;
-        String respuesta = InscView.formCrearInscripcionView();
-        int numeroExcursion = 0;
-        if (respuesta == null || respuesta.isEmpty()) {
-            RespView.respuestaControllerView("Operación cancelada.");
-            return;
-        } else if (respuesta.equals("N")) {
-            SocioController.crearNuevoSocio();
-            return;
-        } else if (respuesta.equals("S")) {
-            String retorno = InscView.formSeguirCrearInscripcionView();
-            if (retorno.isEmpty()) {
-                RespView.respuestaControllerView("Número de socio vacío. Operación cancelada.");
-                return;
+    public void inicializarTabla() {
+        taNumero.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
+        taDesc.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        
+        taExcursion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Integer contenidoCelda = newSelection.getNumeroExcursion();
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                final ClipboardContent content = new ClipboardContent();
+                content.putString(contenidoCelda.toString());
+                clipboard.setContent(content);
+                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
             }
+        });
+    }
 
-            numeroSocio = Integer.parseInt(retorno);
+    public void inicializarTabla2()
+    {
+        taN.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
+        taD.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        
+        taSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Integer contenidoCelda = newSelection.getNumeroSocio();
+                final Clipboard clipboard = Clipboard.getSystemClipboard();
+                final ClipboardContent content = new ClipboardContent();
+                content.putString(contenidoCelda.toString());
+                clipboard.setContent(content);
+                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
+            }
+        });
+    }
 
-        } else {
-            RespView.excepcionesControllerView("Debes introducir 'S' o 'N'. Operación cancelada.");
-            return;
-        }
+
+    @FXML
+    // Metodo para crear una Inscripcion
+    public void crearInscripcion() {
+        inicializarTabla();
+        inicializarTabla2();
+        List<SocioEstandarModel> socios = SocioEstandarModel.obtenerSocios();
+        List<ExcursionModel> excursiones = ExcursionModel.obtenerListadoExcursiones();
+        
+        // Convertir la lista a una ObservableList
+        ObservableList<ExcursionModel> observableList = FXCollections.observableArrayList(excursiones);
+        ObservableList<SocioEstandarModel> observableList2 = FXCollections.observableArrayList(socios);
+
+        // Asignar la lista al TableView
+        taExcursion.setItems(observableList);
+        taSocios.setItems(observableList2);
+        int numeroSocio = 0;
+        //String respuesta = InscView.formCrearInscripcionView();
+        int numeroExcursion = 0;
+        //if (respuesta == null || respuesta.isEmpty()) {
+          //  RespView.respuestaControllerView("Operación cancelada.");
+            //return;
+        //} else if (respuesta.equals("N")) {
+          //  SocioController.crearNuevoSocio();
+           // return;
+        //} else if (respuesta.equals("S")) {
+          //  String retorno = InscView.formSeguirCrearInscripcionView();
+            //if (retorno.isEmpty()) {
+              //  RespView.respuestaControllerView("Número de socio vacío. Operación cancelada.");
+                //return;
+           // }
+
+           // numeroSocio = Integer.parseInt(retorno);
+
+       // } else {
+         //   RespView.excepcionesControllerView("Debes introducir 'S' o 'N'. Operación cancelada.");
+           // return;
+        //}
 
         // Si se llega aquí, significa que el usuario indicó que el socio existe y se le
         // pide ingresar el número de socio
         // Comprueba si el socio existe
         try {
             if (!SocioModel.comprobarSocioPorNumeroSocio(numeroSocio)) {
-                RespView.excepcionesControllerView("Socio no encontrado.");
                 return;
             }
         } catch (Exception e) {
-            RespView.excepcionesControllerView(e.getMessage());
+            //RespView.excepcionesControllerView(e.getMessage());
         }
 
         // Obtiene y muestra el listado de excursiones
-        String[] listadoExcursiones = ExcursionModel.obtenerListadoExcursiones();
-        String retornoExcursion = InscView.formListadoExcursionesView(listadoExcursiones[0]);
-        if (retornoExcursion.matches("\\d+")) {
-            int opcion = Integer.parseInt(retornoExcursion);
-            numeroExcursion = ExcursionModel.obtenerExcursionDesdeLista(opcion).getNumeroExcursion();
-        } else {
-            RespView.excepcionesControllerView("Debes introducir un valor númerico.");
-            return;
-        }
+        List<ExcursionModel> listadoExcursiones = ExcursionModel.obtenerListadoExcursiones();
+        //String retornoExcursion = InscView.formListadoExcursionesView(listadoExcursiones[0]);
+       // if (retornoExcursion.matches("\\d+")) {
+         //   int opcion = Integer.parseInt(retornoExcursion);
+           // numeroExcursion = ExcursionModel.obtenerExcursionDesdeLista(opcion).getNumeroExcursion();
+       // } else {
+         //   RespView.excepcionesControllerView("Debes introducir un valor númerico.");
+          //  return;
+        //}
 
         // Comprueba si la excursión existe
         try {
             if (ExcursionModel.obtenerExcursionPorNumeroExcursion(numeroExcursion) == null) {
-                RespView.excepcionesControllerView("Excursión no encontrada.");
+                //RespView.excepcionesControllerView("Excursión no encontrada.");
                 return;
             }
         } catch (Exception e) {
-            RespView.excepcionesControllerView(e.getMessage());
+           // RespView.excepcionesControllerView(e.getMessage());
         }
 
         // Genera un número de inscripción aleatorio
         int numeroInscripcion = Integer.parseInt("9" + generarID());
-        RespView.respuestaControllerView("- Número de inscripción generado: " + numeroInscripcion);
+        //RespView.respuestaControllerView("- Número de inscripción generado: " + numeroInscripcion);
 
         // Crea la inscripción
         InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion, numeroSocio, numeroExcursion,
                 new Date());
         try {
             String respuest = InscripcionModel.crearInscripcion(inscripcion);
-            RespView.respuestaControllerView(respuest);
+          //  RespView.respuestaControllerView(respuest);
         } catch (Exception e) {
-            RespView.excepcionesControllerView(e.getMessage());
+           // RespView.excepcionesControllerView(e.getMessage());
         }
     }
 

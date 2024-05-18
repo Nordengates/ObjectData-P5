@@ -94,7 +94,20 @@ public class AppController {
     // (Gestión Inscripciones)
     @FXML
     public void nuevaInscripcionFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
+        try {
+            Parent root = loader.load();
+            // Obtener el controlador del formulario cargado
+            InscripcionController controller = loader.getController();
+            // Llamar al método buscarExcursiones() en el controlador
+            controller.crearInscripcion();
+            // Mostrar el formulario
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
