@@ -11,7 +11,7 @@
    <children>
       <Text layoutX="174.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="LISTADO DE SOCIOS" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
          <font>
-            <Font size="16.0"/>
+            <Font size="16.0" />
          </font>
       </Text>
       <Text layoutX="14.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtros:" wrappingWidth="90.13671875" />
@@ -25,6 +25,6 @@
           <TableColumn fx:id="taTipoSocio" prefWidth="155.0" text="Tipo de socio" />
         </columns>
       </TableView>
-      <Text fx:id="taInfo" fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="130" />
+      <Text fill="RED" layoutX="487.0" layoutY="75.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="90.13671875" />
    </children>
 </AnchorPane>

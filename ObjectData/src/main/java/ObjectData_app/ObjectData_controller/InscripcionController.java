@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.BorderPane;
 import ObjectData_app.ObjectData_model.ExcursionModel;
 
 import java.text.ParseException;
@@ -25,17 +26,19 @@ import java.util.List;
 import java.util.Random;
 
 public class InscripcionController {
+     @FXML
+    private BorderPane mainContainer;
     @FXML
     private Label label;
 
     @FXML
-    private TextField tfNombreExcursion;
+    private TextField tfNumSocio;
 
     @FXML
     private Label label1;
 
     @FXML
-    private TextField tfNumDias;
+    private TextField tfNumExc;
 
     @FXML
     private Button btCrear;
@@ -90,6 +93,7 @@ public class InscripcionController {
                 final ClipboardContent content = new ClipboardContent();
                 content.putString(contenidoCelda.toString());
                 clipboard.setContent(content);
+                tfNumExc.setText(contenidoCelda.toString());
                 NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
             }
         });
@@ -107,6 +111,7 @@ public class InscripcionController {
                 final ClipboardContent content = new ClipboardContent();
                 content.putString(contenidoCelda.toString());
                 clipboard.setContent(content);
+                tfNumSocio.setText(contenidoCelda.toString());
                 NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
             }
         });
@@ -128,40 +133,8 @@ public class InscripcionController {
         // Asignar la lista al TableView
         taExcursion.setItems(observableList);
         taSocios.setItems(observableList2);
-        int numeroSocio = 0;
-        //String respuesta = InscView.formCrearInscripcionView();
-        int numeroExcursion = 0;
-        //if (respuesta == null || respuesta.isEmpty()) {
-          //  RespView.respuestaControllerView("Operación cancelada.");
-            //return;
-        //} else if (respuesta.equals("N")) {
-          //  SocioController.crearNuevoSocio();
-           // return;
-        //} else if (respuesta.equals("S")) {
-          //  String retorno = InscView.formSeguirCrearInscripcionView();
-            //if (retorno.isEmpty()) {
-              //  RespView.respuestaControllerView("Número de socio vacío. Operación cancelada.");
-                //return;
-           // }
-
-           // numeroSocio = Integer.parseInt(retorno);
-
-       // } else {
-         //   RespView.excepcionesControllerView("Debes introducir 'S' o 'N'. Operación cancelada.");
-           // return;
-        //}
-
-        // Si se llega aquí, significa que el usuario indicó que el socio existe y se le
-        // pide ingresar el número de socio
-        // Comprueba si el socio existe
-        try {
-            if (!SocioModel.comprobarSocioPorNumeroSocio(numeroSocio)) {
-                return;
-            }
-        } catch (Exception e) {
-            //RespView.excepcionesControllerView(e.getMessage());
-        }
-
+        
+             
         // Obtiene y muestra el listado de excursiones
         List<ExcursionModel> listadoExcursiones = ExcursionModel.obtenerListadoExcursiones();
         //String retornoExcursion = InscView.formListadoExcursionesView(listadoExcursiones[0]);
@@ -174,22 +147,20 @@ public class InscripcionController {
         //}
 
         // Comprueba si la excursión existe
-        try {
-            if (ExcursionModel.obtenerExcursionPorNumeroExcursion(numeroExcursion) == null) {
-                //RespView.excepcionesControllerView("Excursión no encontrada.");
-                return;
-            }
-        } catch (Exception e) {
-           // RespView.excepcionesControllerView(e.getMessage());
-        }
+        
 
         // Genera un número de inscripción aleatorio
         int numeroInscripcion = Integer.parseInt("9" + generarID());
         //RespView.respuestaControllerView("- Número de inscripción generado: " + numeroInscripcion);
+// Obtener el texto de los TextField
+String textoNumSocio = tfNumSocio.getText();
+String textoNumExc = tfNumExc.getText();
 
-        // Crea la inscripción
-        InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion, numeroSocio, numeroExcursion,
-                new Date());
+// Crear un objeto InscripcionModel, convirtiendo los textos a números
+InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion,
+                                                    Integer.parseInt(textoNumSocio),
+                                                    Integer.parseInt(textoNumExc),
+                                                    new Date());
         try {
             String respuest = InscripcionModel.crearInscripcion(inscripcion);
           //  RespView.respuestaControllerView(respuest);
