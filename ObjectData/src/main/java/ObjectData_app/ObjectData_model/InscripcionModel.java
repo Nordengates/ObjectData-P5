@@ -1,8 +1,10 @@
 package ObjectData_app.ObjectData_model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import ObjectData_app.ObjectData_model.ObjectData_Hibernate.ExcursionModelHib;
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.InscripcionHib;
 
 import org.hibernate.HibernateException;
@@ -163,6 +165,43 @@ public class InscripcionModel {
         return new String[] { listado.toString(), String.valueOf(contador) };
     }
 
+public static ArrayList<InscripcionModel> objetoListaInscripcion(Date fechaInicio, Date fechaFin) {
+        crearSessionHib();
+        List<InscripcionHib> inscripcionesHib = null;
+        ArrayList<InscripcionModel> inscripciones = new ArrayList<>();
+        try {
+            session.beginTransaction();
+            String sql = "SELECT * FROM inscripcion WHERE fechaInscripcion BETWEEN :fechaI AND :fechaF";
+
+            inscripcionesHib = session
+                .createNativeQuery(sql, InscripcionHib.class)
+                .setParameter("fechaI", fechaInicio)
+                .setParameter("fechaF", fechaFin)
+                .list();
+
+            session.getTransaction().commit();
+            for (InscripcionHib inscripcion : inscripcionesHib) {
+                inscripciones.add(new InscripcionModel(
+                    inscripcion.getNumeroInscripcion(), 
+                    inscripcion.getNumeroSocio(), 
+                    inscripcion.getNumeroExcursion(), 
+                    inscripcion.getFechaInscripcion() 
+                    ));
+            }
+        } catch (Exception e) {
+            // Devolvemos el error aguas arriba en las clases
+            throw e;
+        } finally {
+            // Finalmente cerramos la sesión y el objeto de fábrica de sesiones
+            session.close();
+            // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
+            sessionFactory.close();
+        }
+        return inscripciones;
+    }
+
+
+    
     public static boolean eliminarInscripcionNumero(int numeroInscripcion) {
         Transaction transaction = null;
 
