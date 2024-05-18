@@ -54,7 +54,22 @@ public class AppController {
 
     @FXML
     public void nuevoSocioInfantilFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/SocioView/nuevoSocioInfantilFXMLLoader.fxml");
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/ObjectData_app/ObjectData_view/SocioView/nuevoSocioInfantilFXMLLoader.fxml"));
+        try {
+            Parent formulario = loader.load();
+            mainContainer.setCenter(formulario);
+            // Obtener el controlador del formulario cargado
+            SocioController controller = loader.getController();
+            // Llamar al método cargarLosSociosEnTabla() en el controlador para cargar los
+            // socios
+            controller.cargarLosSociosEnTabla();
+            // Llamar al método filtrarSocioPorNumeroEnTabla() en el controlador
+            controller.filtrarSocioPorNumeroEnTabla();
+            //controller.crearSocioInfantil();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

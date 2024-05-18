@@ -51,7 +51,7 @@ public class FederacionModel {
         int contador = 0;
         for (FederacionHib federacion : listaFederaciones) {
             contador++;
-            listado += "\n    - " + contador + ". " + federacion.toString();
+            listado += "\n" + contador + "-" + federacion.toString();
         }
         if (contador == 0) {
             listado = "- Sin datos.";

@@ -90,6 +90,11 @@ public class SocioController {
     @FXML 
     private ComboBox<String> cbFederaciones;
 
+    //Componentes de 'Socio Infantil'
+    @FXML
+    private TextField tfNombreSocioInfantil;
+    
+
     @FXML
    public void initialize() {
         cargarFederaciones();
@@ -244,51 +249,56 @@ public class SocioController {
     }
 
     @FXML
-    private void crearSocioFederado() {
-        String nombre = tfNombreSocioFederado.getText();
-        String NIF = tfDniSocioFederado.getText();
-        int numeroSocio;
-        boolean todoOk = false;
-        FederacionModel federacion = null;
-    
-        if (nombre.isEmpty() || NIF.isEmpty()) {
-            NotificacionView.Notificacion("ERROR", "Campos vacíos", "Por favor, llene todos los campos.");
-            return;
-        }
-    
-        String seleccion = cbFederaciones.getValue(); // Obtener el valor seleccionado del ComboBox
-    
-        if (seleccion == null) {
-            NotificacionView.Notificacion("ERROR", "Federación no seleccionada", "Por favor, seleccione una federación.");
-            return;
-        }
-    
-        try {
-            //federacion = FederacionModel.obtenerFederacion(seleccion); // Obtener el objeto FederacionModel
-        } catch (Exception e) {
-            NotificacionView.Notificacion("ERROR", "Error al obtener federación", e.getMessage());
-            return;
-        }
-    
-        // Generar el número de socio y mostrar notificación
-        numeroSocio = Integer.parseInt("6" + generarID());
-        NotificacionView.Notificacion("INFO", "Número de socio", "# Número de socio generado: " + numeroSocio);
-    
-        // Crear el objeto SocioFederadoModel
-        SocioFederadoModel socio = new SocioFederadoModel(numeroSocio, nombre, NIF, federacion.getCodigo());
-    
-        try {
-            socio.crearSocioFederado(socio);
-            NotificacionView.Notificacion("EXITO", "Socio creado", "Se ha creado el socio federado correctamente.");
-            todoOk = true;
-        } catch (Exception e) {
-            NotificacionView.Notificacion("ERROR", "Error al crear socio", e.getMessage());
-        }
+private void crearSocioFederado() {
+    String nombre = tfNombreSocioFederado.getText();
+    String NIF = tfDniSocioFederado.getText();
+    int numeroSocio;
+    FederacionModel federacion = null;
+
+    if (nombre.isEmpty() || NIF.isEmpty()) {
+        NotificacionView.Notificacion("ERROR", "Campos vacíos", "Por favor, llene todos los campos.");
+        return;
     }
+
+    String seleccion = cbFederaciones.getValue(); // Obtener el valor seleccionado del ComboBox
+
+    if (seleccion == null) {
+        NotificacionView.Notificacion("ERROR", "Federación no seleccionada", "Por favor, seleccione una federación.");
+        return;
+    }
+
+    try {
+        // Dividir la selección por el carácter "-"
+        String[] partes = seleccion.split("-");
+        // Tomar la primera parte, que debería ser el ID
+        String idFederacion = partes[0].trim();
+        // Obtener la federación utilizando el ID
+        federacion = FederacionModel.obtenerFederacion(Integer.valueOf(idFederacion));
+    } catch (Exception e) {
+        NotificacionView.Notificacion("ERROR", "Error al obtener federación", e.getMessage());
+        return;
+    }
+
+    // Generar el número de socio y mostrar notificación
+    numeroSocio = Integer.parseInt("6" + generarID());
+    
+    // Crear el objeto SocioFederadoModel
+    SocioFederadoModel socio = new SocioFederadoModel(numeroSocio, nombre, NIF, federacion.getCodigo());
+
+    try {
+        socio.crearSocioFederado(socio);
+        NotificacionView.Notificacion("INFORMATION", "Socio creado", "Se ha creado el socio federado correctamente.");
+    } catch (Exception e) {
+        NotificacionView.Notificacion("ERROR", "Error al crear socio", e.getMessage());
+    }
+}
+
     
 
     private void cargarFederaciones() {
+        if(cbFederaciones==null) return;
         String[] listaFederaciones;
+
         try {
             listaFederaciones = FederacionModel.obtenerListadoFederacion();
             String listado = listaFederaciones[0];
@@ -311,54 +321,48 @@ public class SocioController {
         }
     }
 
-    public static void crearSocioInfantil() {
+    @FXML
+    public void crearSocioInfantil() {
         // Atributos
-        String retorno;
-        int numeroSocioTutorLegal = 0; // Varialbe para almacenar numeroSocioTutorLegal.
-        String nombre; // El primer parametro del array sera el nombre
-        int numeroSocio; // Para almacenar el numero de socio.
-        boolean todoOk = false;
-        // Imprimimos el titulo de la función.
-        RespView.tituloDeLaFuncion("-- FORMULARIO PARA CREAR UN SOCIO INFANTIL --");
-        // Bucle para la logica de comprobacion de datos.
-        do {
-            // Pedimos el nombre del socio.
-            nombre = SociView.obtenerNombreSocio();
-            // Si nombre esta vacio salimos.
-            if (nombre.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            }
-            todoOk = true;
-        } while (!todoOk);
-        todoOk = false;
-        do {
-            // Pedimos el codigo del tutor legal
-            retorno = SociView.numeroSocioParentalView();
-            // Creamos la excepción para verificar el tipo de dato introducido.
-            if (retorno.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            } else if (retorno.matches("\\d+")) { // Verifica si la opción es un número entero
-                numeroSocioTutorLegal = Integer.parseInt(retorno);
-                todoOk = true;
-            } else {
-                // Si no es un número entero, muestra un mensaje de error
-                RespView.excepcionesControllerView("Opcion no valida, debe introducir un valor numerico.");
-                continue;
-            }
-        } while (!todoOk);
-        // Método para generar un número de socio aleatorio
-        numeroSocio = Integer.parseInt("7" + generarID()); // Número de socio
-        RespView.respuestaControllerView("# Numero de socio generado: " + numeroSocio);
-        // Creamos el objeto con los datos recolectados.
-        SocioInfantilModel socio = new SocioInfantilModel(numeroSocio, nombre, numeroSocioTutorLegal);
+        String nombre;
+        
+        // Obtener el socio parental seleccionado
+        SocioModel socioSeleccionado = (SocioModel) taTodosLosSocios.getSelectionModel().getSelectedItem();
+        
+        // Verificar si se seleccionó un socio
+        if (socioSeleccionado == null) {
+            NotificacionView.Notificacion("WARNING", "Atención", "Debe seleccionar un socio parental");
+            return;
+        }
+    
+        // Obtener el nombre del socio infantil
+        nombre = tfNombreSocioInfantil.getText();
+    
+        // Verificar si se ingresó un nombre
+        if (nombre.isEmpty()) {
+            NotificacionView.Notificacion("WARNING", "Atención", "Debe indicar el nombre del socio infantil");
+            return;
+        }
+    
+        // Generar el número de socio y mostrar notificación
+        int numeroSocio = Integer.parseInt("7" + generarID()); // Número de socio
+    
+        // Crear el objeto SocioInfantilModel
+        SocioInfantilModel socioInfantil = new SocioInfantilModel(numeroSocio, nombre, socioSeleccionado.getNumeroSocio());
+    
         // Enviamos la información al modelo para que añada el socio a la BBDD
         try {
-            socio.crearSocioInfantil(socio);
-            RespView.respuestaControllerView("Se ha creado el socio infantil correctamente.");
+            socioInfantil.crearSocioInfantil(socioInfantil);
+            NotificacionView.Notificacion("INFORMATION", "", "Se ha creado el socio infantil " + numeroSocio);
         } catch (Exception e) {
-            RespView.excepcionesControllerView(e.getMessage());
+            NotificacionView.Notificacion("ERROR", "Error al crear socio infantil", "Ha ocurrido un error: " + e.getMessage());
         }
     }
+    
+    
+    
+
+    
 
     private void mostrarAvisoEliminacion(String warning) {
         tInfo.setText(warning);
