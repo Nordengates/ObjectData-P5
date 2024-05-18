@@ -72,7 +72,7 @@ public class SocioController {
     // FIN 
 
     @FXML
-    public void initialize() {
+   public void initialize() {
         if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
 
         // Configurar las columnas de la tabla de eliminación de socios
@@ -84,6 +84,13 @@ public class SocioController {
     public void initializeForm() {
         if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
         limpiarAvisoEliminacion();
+    }
+
+    public void inicializarScreenEliminacion(){
+        limpiarAvisoEliminacion();
+         // Configurar las columnas de la tabla de eliminación de socios
+         if(colNumeroSocio!=null) colNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
+         if(colNombre!=null) colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
     }
 
     public void mostrarTodosLosSocios() {
@@ -485,7 +492,7 @@ public class SocioController {
         try {
             inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
         } catch (Exception e) {
-            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación");
+            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
             return;
         }
     
@@ -499,7 +506,7 @@ public class SocioController {
         try {
             tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
         } catch (Exception e) {
-            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación");
+            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
             return;
         }
 
@@ -525,7 +532,8 @@ public class SocioController {
             alert.showAndWait();
 
         } catch (Exception e) {
-            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación");
+            mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
+            System.err.println("Ha ocurido un error en la elimicación. Causa:"+e.getMessage());
         }
     
         // Actualizar la tabla después de eliminar el socio

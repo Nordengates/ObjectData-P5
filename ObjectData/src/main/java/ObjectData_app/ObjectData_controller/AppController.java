@@ -75,7 +75,19 @@ public class AppController {
 
     @FXML
     public void eliminarSocioFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/SocioView/eliminarSocioFXMLLoader.fxml");
+        FXMLLoader loader = new FXMLLoader(
+            getClass().getResource("/ObjectData_app/ObjectData_view/SocioView/eliminarSocioFXMLLoader.fxml"));
+        try {
+            Parent formulario = loader.load();
+            mainContainer.setCenter(formulario);
+            // Obtener el controlador del formulario cargado
+            SocioController controller = loader.getController();
+            // Llamar al método buscarExcursiones() en el controlador
+            controller.inicializarScreenEliminacion();
+            // Mostrar el formulario
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
