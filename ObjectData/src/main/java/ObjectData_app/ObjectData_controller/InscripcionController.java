@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.BorderPane;
 import ObjectData_app.ObjectData_model.ExcursionModel;
 
 import java.text.ParseException;
@@ -25,17 +26,19 @@ import java.util.List;
 import java.util.Random;
 
 public class InscripcionController {
+     @FXML
+    private BorderPane mainContainer;
     @FXML
     private Label label;
 
     @FXML
-    private TextField tfNombreExcursion;
+    private TextField tfNumSocio;
 
     @FXML
     private Label label1;
 
     @FXML
-    private TextField tfNumDias;
+    private TextField tfNumExc;
 
     @FXML
     private Button btCrear;
@@ -90,6 +93,7 @@ public class InscripcionController {
                 final ClipboardContent content = new ClipboardContent();
                 content.putString(contenidoCelda.toString());
                 clipboard.setContent(content);
+                tfNumExc.setText(contenidoCelda.toString());
                 NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
             }
         });
@@ -107,6 +111,7 @@ public class InscripcionController {
                 final ClipboardContent content = new ClipboardContent();
                 content.putString(contenidoCelda.toString());
                 clipboard.setContent(content);
+                tfNumSocio.setText(contenidoCelda.toString());
                 NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
             }
         });
@@ -128,6 +133,7 @@ public class InscripcionController {
         // Asignar la lista al TableView
         taExcursion.setItems(observableList);
         taSocios.setItems(observableList2);
+        
         int numeroSocio = 0;
         //String respuesta = InscView.formCrearInscripcionView();
         int numeroExcursion = 0;

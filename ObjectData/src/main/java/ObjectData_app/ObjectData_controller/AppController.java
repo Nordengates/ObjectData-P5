@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -94,22 +95,25 @@ public class AppController {
     // (Gestión Inscripciones)
     @FXML
     public void nuevaInscripcionFXMLLoader() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
         try {
+            // Cargar el archivo FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
             Parent root = loader.load();
+
             // Obtener el controlador del formulario cargado
             InscripcionController controller = loader.getController();
-            // Llamar al método buscarExcursiones() en el controlador
+            // Llamar al método crearInscripcion() en el controlador
             controller.crearInscripcion();
-            // Mostrar el formulario
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
+
+            // Establecer el contenido cargado en el centro del BorderPane
+            mainContainer.setCenter(root);
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    
     @FXML
     public void mostrarInscripcionFechaFXMLLoader() {
         FXMLLoader("/ObjectData_app/ObjectData_view/InscripcionView/mostrarInscripcionFechaFXMLLoader.fxml");
