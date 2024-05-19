@@ -237,7 +237,7 @@ public static ArrayList<InscripcionModel> objetoListaInscripcion(Date fechaInici
     }
 
     // Metodo para crear inscripcion
-    public static String crearInscripcion(InscripcionModel inscripcion) {
+    public static void crearInscripcion(InscripcionModel inscripcion) {
         crearSessionHib();
         try {
             InscripcionHib ins = new InscripcionHib(
@@ -253,13 +253,11 @@ public static ArrayList<InscripcionModel> objetoListaInscripcion(Date fechaInici
             session.beginTransaction();
             session.persist(ins);
             session.getTransaction().commit();
-            return "La inscripción se guardo correctamente!";
         } catch (HibernateException e) {
             if (session.getTransaction() != null) {
                 session.getTransaction().rollback();
             }
             e.printStackTrace();
-            return "No se ha podido crear la inscripción: " + e.getMessage();
         } finally {
             session.close();
         }

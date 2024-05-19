@@ -32,7 +32,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import ObjectData_app.ObjectData_model.ExcursionModel;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
@@ -198,7 +197,7 @@ public class InscripcionController {
                         new Date());
 
                 // Llamar al método para crear la inscripción
-                String respuesta = InscripcionModel.crearInscripcion(inscripcion);
+                InscripcionModel.crearInscripcion(inscripcion);
 
                 // Mostrar mensaje de éxito
                 NotificacionView.Notificacion("INFORMATION", "Éxito", "La inscripción se ha creado correctamente.");
@@ -313,7 +312,6 @@ public class InscripcionController {
     }
 
     public void mostrarInscripcionPorFecha() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         Date fechaInicio = null, fechaFin = null;
 
         try {
