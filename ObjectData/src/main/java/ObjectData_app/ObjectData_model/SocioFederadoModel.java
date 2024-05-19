@@ -8,8 +8,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioFederadoHib;
-import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioEstandarHib;
-import javafx.beans.value.ObservableValue;
 
 public class SocioFederadoModel extends SocioModel {
     // Propiedades de la sesion.

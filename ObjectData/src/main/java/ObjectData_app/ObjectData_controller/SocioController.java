@@ -51,6 +51,8 @@ public class SocioController {
     @FXML
     private Text tInfo1;
     @FXML
+    private Text tTotal;
+    @FXML
     private CheckBox filterEstandar;
     @FXML
     private CheckBox filterFederado;
@@ -80,25 +82,25 @@ public class SocioController {
     private TableColumn<Object, String> colNombre;
     // FIN
 
-    //Componentes de 'Socio Federado'
+    // Componentes de 'Socio Federado'
     @FXML
     private TextField tfNombreSocioFederado;
     @FXML
     private TextField tfDniSocioFederado;
     @FXML
     private Button btCrearSocioFederado;
-    @FXML 
+    @FXML
     private ComboBox<String> cbFederaciones;
 
-    //Componentes de 'Socio Infantil'
+    // Componentes de 'Socio Infantil'
     @FXML
     private TextField tfNombreSocioInfantil;
-    
 
     @FXML
-   public void initialize() {
+    public void initialize() {
         cargarFederaciones();
-        if(cbTipoSeguro!=null) cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
+        if (cbTipoSeguro != null)
+            cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
 
         // Configurar las columnas de la tabla de eliminación de socios
         if (taNumeroSocio != null)
@@ -249,54 +251,55 @@ public class SocioController {
     }
 
     @FXML
-private void crearSocioFederado() {
-    String nombre = tfNombreSocioFederado.getText();
-    String NIF = tfDniSocioFederado.getText();
-    int numeroSocio;
-    FederacionModel federacion = null;
+    private void crearSocioFederado() {
+        String nombre = tfNombreSocioFederado.getText();
+        String NIF = tfDniSocioFederado.getText();
+        int numeroSocio;
+        FederacionModel federacion = null;
 
-    if (nombre.isEmpty() || NIF.isEmpty()) {
-        NotificacionView.Notificacion("ERROR", "Campos vacíos", "Por favor, llene todos los campos.");
-        return;
+        if (nombre.isEmpty() || NIF.isEmpty()) {
+            NotificacionView.Notificacion("ERROR", "Campos vacíos", "Por favor, llene todos los campos.");
+            return;
+        }
+
+        String seleccion = cbFederaciones.getValue(); // Obtener el valor seleccionado del ComboBox
+
+        if (seleccion == null) {
+            NotificacionView.Notificacion("ERROR", "Federación no seleccionada",
+                    "Por favor, seleccione una federación.");
+            return;
+        }
+
+        try {
+            // Dividir la selección por el carácter "-"
+            String[] partes = seleccion.split("-");
+            // Tomar la primera parte, que debería ser el ID
+            String idFederacion = partes[0].trim();
+            // Obtener la federación utilizando el ID
+            federacion = FederacionModel.obtenerFederacion(Integer.valueOf(idFederacion));
+        } catch (Exception e) {
+            NotificacionView.Notificacion("ERROR", "Error al obtener federación", e.getMessage());
+            return;
+        }
+
+        // Generar el número de socio y mostrar notificación
+        numeroSocio = Integer.parseInt("6" + generarID());
+
+        // Crear el objeto SocioFederadoModel
+        SocioFederadoModel socio = new SocioFederadoModel(numeroSocio, nombre, NIF, federacion.getCodigo());
+
+        try {
+            socio.crearSocioFederado(socio);
+            NotificacionView.Notificacion("INFORMATION", "Socio creado",
+                    "Se ha creado el socio federado correctamente.");
+        } catch (Exception e) {
+            NotificacionView.Notificacion("ERROR", "Error al crear socio", e.getMessage());
+        }
     }
-
-    String seleccion = cbFederaciones.getValue(); // Obtener el valor seleccionado del ComboBox
-
-    if (seleccion == null) {
-        NotificacionView.Notificacion("ERROR", "Federación no seleccionada", "Por favor, seleccione una federación.");
-        return;
-    }
-
-    try {
-        // Dividir la selección por el carácter "-"
-        String[] partes = seleccion.split("-");
-        // Tomar la primera parte, que debería ser el ID
-        String idFederacion = partes[0].trim();
-        // Obtener la federación utilizando el ID
-        federacion = FederacionModel.obtenerFederacion(Integer.valueOf(idFederacion));
-    } catch (Exception e) {
-        NotificacionView.Notificacion("ERROR", "Error al obtener federación", e.getMessage());
-        return;
-    }
-
-    // Generar el número de socio y mostrar notificación
-    numeroSocio = Integer.parseInt("6" + generarID());
-    
-    // Crear el objeto SocioFederadoModel
-    SocioFederadoModel socio = new SocioFederadoModel(numeroSocio, nombre, NIF, federacion.getCodigo());
-
-    try {
-        socio.crearSocioFederado(socio);
-        NotificacionView.Notificacion("INFORMATION", "Socio creado", "Se ha creado el socio federado correctamente.");
-    } catch (Exception e) {
-        NotificacionView.Notificacion("ERROR", "Error al crear socio", e.getMessage());
-    }
-}
-
-    
 
     private void cargarFederaciones() {
-        if(cbFederaciones==null) return;
+        if (cbFederaciones == null)
+            return;
         String[] listaFederaciones;
 
         try {
@@ -325,44 +328,41 @@ private void crearSocioFederado() {
     public void crearSocioInfantil() {
         // Atributos
         String nombre;
-        
+
         // Obtener el socio parental seleccionado
         SocioModel socioSeleccionado = (SocioModel) taTodosLosSocios.getSelectionModel().getSelectedItem();
-        
+
         // Verificar si se seleccionó un socio
         if (socioSeleccionado == null) {
             NotificacionView.Notificacion("WARNING", "Atención", "Debe seleccionar un socio parental");
             return;
         }
-    
+
         // Obtener el nombre del socio infantil
         nombre = tfNombreSocioInfantil.getText();
-    
+
         // Verificar si se ingresó un nombre
         if (nombre.isEmpty()) {
             NotificacionView.Notificacion("WARNING", "Atención", "Debe indicar el nombre del socio infantil");
             return;
         }
-    
+
         // Generar el número de socio y mostrar notificación
         int numeroSocio = Integer.parseInt("7" + generarID()); // Número de socio
-    
+
         // Crear el objeto SocioInfantilModel
-        SocioInfantilModel socioInfantil = new SocioInfantilModel(numeroSocio, nombre, socioSeleccionado.getNumeroSocio());
-    
+        SocioInfantilModel socioInfantil = new SocioInfantilModel(numeroSocio, nombre,
+                socioSeleccionado.getNumeroSocio());
+
         // Enviamos la información al modelo para que añada el socio a la BBDD
         try {
             socioInfantil.crearSocioInfantil(socioInfantil);
             NotificacionView.Notificacion("INFORMATION", "", "Se ha creado el socio infantil " + numeroSocio);
         } catch (Exception e) {
-            NotificacionView.Notificacion("ERROR", "Error al crear socio infantil", "Ha ocurrido un error: " + e.getMessage());
+            NotificacionView.Notificacion("ERROR", "Error al crear socio infantil",
+                    "Ha ocurrido un error: " + e.getMessage());
         }
     }
-    
-    
-    
-
-    
 
     private void mostrarAvisoEliminacion(String warning) {
         tInfo.setText(warning);
@@ -407,7 +407,8 @@ private void crearSocioFederado() {
                     Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
                     alertConfirmation.setTitle("Confirmación de Eliminación");
                     alertConfirmation.setHeaderText(null);
-                    alertConfirmation.setContentText("¿Estás seguro de que deseas eliminar al socio con número de socio " + numeroSocio + "?");
+                    alertConfirmation.setContentText(
+                            "¿Estás seguro de que deseas eliminar al socio con número de socio " + numeroSocio + "?");
                     Optional<ButtonType> result = alertConfirmation.showAndWait();
                     if (result.isPresent() && result.get() != ButtonType.OK) {
                         return;
@@ -479,14 +480,17 @@ private void crearSocioFederado() {
                             ArrayList<String[]> conceptosArrayList = new ArrayList<>();
                             int numeroSocio = ((SocioModel) newSelection).getNumeroSocio();
                             String tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
+                            ArrayList<InscripcionModel> inscripcionesSocioModel = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
                             Double facturacion = 0.0;
                             final Double cuotaMensual = 10.00;
-
                             if (tipoSocio.equals("Estandar")) {
+                                //Reseteamos los conceptos
+                                conceptoStrings = null;
+                                facturacion = 0.0;
                                 //Cuota mensual
-                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() };
+                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€"};
                                 conceptosArrayList.add(conceptoStrings);
-
+                                facturacion += cuotaMensual;
                                 //Precio seguro
                                 Double precioSeguro = 0.0;
                                 try {
@@ -494,76 +498,70 @@ private void crearSocioFederado() {
                                 } catch (Exception e) {
                                     NotificacionView.Notificacion("ERROR", "Error encontrado", "Fallo en la ejecución del programa: " + e);
                                 }
-                                conceptoStrings = new String[] { "Seguro", precioSeguro.toString() };
+                                conceptoStrings = new String[] { "Coste seguro", precioSeguro.toString() + "€"};
                                 conceptosArrayList.add(conceptoStrings);
-                                //
-                                taResultadoFacturacion.setItems(FXCollections.observableArrayList(conceptosArrayList));
-                                // Coste de la cuota
-                                // respuesta += "\n - Coste de la cuota: " + cuotaMensual + " euros.";
-                                // Obtenemos el precio del seguro contratado desde el modelo.
-                                // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
-                                // usar try para comprobar posibles excepciones.
-
-                                // Obtener listado de excursiones y precio:
-                                // Al intentar obtener datos de un medio exteno, en este caso la BBDD, debemos
-                                // usar try para comprobar posibles excepciones.
-                                try {
-                                    // = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
-                                } catch (Exception e) {
-                                    NotificacionView.Notificacion("ERROR", "Error encontrado",
-                                            "Fallo en la ejecución del programa: " + e);
+                                facturacion += precioSeguro;
+                                //Listado de excursiones inscritas
+                                for (InscripcionModel inscripcion : inscripcionesSocioModel) {
+                                    //Obtenemos la excursión
+                                    ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                    //Obtenemos el precio de la excursión
+                                    Double precioExcursion = excursion.getPrecioInscripcion();
+                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(), precioExcursion.toString() + "€" };
+                                    conceptosArrayList.add(conceptoStrings);
+                                    facturacion += precioExcursion;
                                 }
-
-                                // respuesta += retornoArray[0];
-
-                                // // Precio del seguro.
-                                // respuesta += "\n - Coste del seguro: " + precioSeguro + " euros.";
-                                // // Se genera el precio final de facturación
-                                // facturacion = cuotaMensual + precioSeguro +
-                                // Double.parseDouble(retornoArray[1]);
-                                // // Se manda el resultado a la vista
-                                // respuesta += "\n El socio factura " + facturacion + " euros mensuales.";
-                                // } else if (tipoSocio.equals("Federado")) {
-                                // // Aplicamos un despues de la cuota mensual 5%
-                                // Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 5 / 100);
-                                // // Obtener listado de escursiones y precio:
-                                // // Al intentar obtener datos de un medio exteno, en este caso la BBDD,
-                                // debemos
-                                // // usar try para comprobar posibles excepciones.
-                                // try {
-                                // retornoArray = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
-                                // } catch (Exception e) {
-                                // RespView.excepcionesControllerView(e.getMessage());
-                                // }
-
-                                // respuesta += retornoArray[0];
-                                // // Se calcula el descuento de las escursiones de este socio. 10%
-                                // Double descuentoExcursiones = Double.parseDouble(retornoArray[1])
-                                // - (Double.parseDouble(retornoArray[1]) * 10 / 100);
-                                // // Se genera el precio final de facturación
-                                // facturacion = precioCuotaDescuento + descuentoExcursiones;
-                                // // Se manda el resultado a la vista
-                                // respuesta += "\n El socio factura " + facturacion
-                                // + " euros mensuales. (10% de dto. incluido en el precio final.)";
-                                // } else if (tipoSocio.equals("Infantil")) {
-                                // // Aplicamos un descuento de la cuota mensual 50%
-                                // Double precioCuotaDescuento = cuotaMensual
-                                // - (cuotaMensual * 50 / 100);
-                                // respuesta += "\n - Coste de la cuota: " + precioCuotaDescuento + " euros.";
-                                // // Obtener listado de escursiones y precio:
-                                // // Al intentar obtener datos de un medio exteno, en este caso la BBDD,
-                                // debemos
-                                // // usar try para comprobar posibles excepciones.
-                                // try {
-                                // retornoArray = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
-                                // } catch (Exception e) {
-                                // RespView.excepcionesControllerView(e.getMessage());
-                                // }
-                                // respuesta += retornoArray[0];
-                                // // Se genera el precio final de facturación
-                                // facturacion = precioCuotaDescuento + Double.parseDouble(retornoArray[1]);
-                                // // Se manda el resultado a la vista
-                                // respuesta += "\n El socio factura " + facturacion + " euros mensuales.";
+                                tTotal.setText("Total facturado: " + facturacion + "€");
+                                taResultadoFacturacion.setItems(FXCollections.observableArrayList(conceptosArrayList));
+                            } else if (tipoSocio.equals("Federado")) {
+                                //Reseteamos los conceptos
+                                conceptoStrings = null;
+                                facturacion = 0.0;
+                                // Aplicamos un despues de la cuota mensual 5%
+                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€"};
+                                conceptosArrayList.add(conceptoStrings);
+                                Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 95 / 100);
+                                conceptoStrings = new String[] { "  Desc. cuota mensual 5%", "-" + precioCuotaDescuento.toString() + "€"};
+                                conceptosArrayList.add(conceptoStrings); 
+                                facturacion += cuotaMensual - precioCuotaDescuento;
+                                //Listado de excursiones inscritas
+                                for (InscripcionModel inscripcion : inscripcionesSocioModel) {
+                                    //Obtenemos la excursión
+                                    ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                    //Obtenemos el precio de la excursión
+                                    Double precioExcursion = excursion.getPrecioInscripcion();
+                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(), precioExcursion.toString() + "€" };
+                                    conceptosArrayList.add(conceptoStrings);
+                                    Double descuentoExcursiones = Math.round((precioExcursion - (precioExcursion * 90 / 100)) * 10.0) / 10.0;
+                                    conceptoStrings = new String[] { "  Desc. excursión 10%", "-" + descuentoExcursiones.toString() + "€" };
+                                    conceptosArrayList.add(conceptoStrings);
+                                    facturacion += precioExcursion - descuentoExcursiones;
+                                }
+                                tTotal.setText("Total facturado: " + facturacion + "€");
+                                taResultadoFacturacion.setItems(FXCollections.observableArrayList(conceptosArrayList));
+                            } else if (tipoSocio.equals("Infantil")) {
+                                //Reseteamos los conceptos
+                                conceptoStrings = null;
+                                facturacion = 0.0;
+                                // Aplicamos un despues de la cuota mensual 5%
+                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€"};
+                                conceptosArrayList.add(conceptoStrings);
+                                Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 50 / 100);
+                                conceptoStrings = new String[] { "  Desc. cuota mensual 50%", "-" + precioCuotaDescuento.toString() + "€"};
+                                conceptosArrayList.add(conceptoStrings); 
+                                facturacion += cuotaMensual - precioCuotaDescuento;
+                                //Listado de excursiones inscritas
+                                for (InscripcionModel inscripcion : inscripcionesSocioModel) {
+                                    //Obtenemos la excursión
+                                    ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                    //Obtenemos el precio de la excursión
+                                    Double precioExcursion = excursion.getPrecioInscripcion();
+                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(), precioExcursion.toString() + "€" };
+                                    conceptosArrayList.add(conceptoStrings);
+                                    facturacion += precioExcursion;
+                                }
+                                tTotal.setText("Total facturado: " + facturacion + "€");
+                                taResultadoFacturacion.setItems(FXCollections.observableArrayList(conceptosArrayList));
                             }
                             return null;
                         } catch (Exception e) {

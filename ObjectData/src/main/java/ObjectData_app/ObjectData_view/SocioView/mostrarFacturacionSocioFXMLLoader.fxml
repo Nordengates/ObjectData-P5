@@ -25,18 +25,18 @@
             <Font size="13.0" />
          </font>
       </Text>
-      <TableView fx:id="taTodosLosSocios" layoutX="14.0" layoutY="101.0" prefHeight="364.0" prefWidth="338.0">
+      <TableView fx:id="taTodosLosSocios" layoutX="14.0" layoutY="101.0" prefHeight="364.0" prefWidth="299.0">
         <columns>
           <TableColumn fx:id="taNumeroSocio" prefWidth="107.0" text="Número socio" />
-          <TableColumn fx:id="taNombre" prefWidth="230.0" text="Nombre del socio" />
+          <TableColumn fx:id="taNombre" prefWidth="191.0" text="Nombre del socio" />
         </columns>
       </TableView>
-      <TableView fx:id="taResultadoFacturacion" layoutX="368.0" layoutY="101.0" prefHeight="364.0" prefWidth="338.0">
+      <TableView fx:id="taResultadoFacturacion" layoutX="323.0" layoutY="101.0" prefHeight="323.0" prefWidth="383.0">
          <columns>
-            <TableColumn prefWidth="170.0" text="Facturación total del socio:">
+            <TableColumn prefWidth="382.0" text="Facturación total del socio">
                <columns>
-                  <TableColumn fx:id="taConceptoFacturacion" prefWidth="217.0" text="Concepto" />
-                  <TableColumn fx:id="taCosteFacturacion" prefWidth="120.0" text="Coste" />
+                  <TableColumn fx:id="taConceptoFacturacion" prefWidth="310.0" text="Concepto" />
+                  <TableColumn fx:id="taCosteFacturacion" prefWidth="72.0" text="Coste" />
                </columns>
             </TableColumn>
          </columns>
@@ -46,7 +46,12 @@
             <Font name="System Bold" size="16.0" />
          </font>
       </Text>
-      <Text fx:id="tInfo1" fill="RED" layoutX="105.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" underline="true" wrappingWidth="529.13671875">
+      <Text fx:id="tInfo1" fill="RED" layoutX="105.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" underline="true" wrappingWidth="468.13671875">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Text>
+      <Text fx:id="tTotal" layoutX="328.0" layoutY="459.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" underline="true" wrappingWidth="372.13671875">
          <font>
             <Font name="System Bold" size="16.0" />
          </font>

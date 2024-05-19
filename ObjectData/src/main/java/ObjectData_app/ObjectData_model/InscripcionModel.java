@@ -302,13 +302,14 @@ public static ArrayList<InscripcionModel> objetoListaInscripcion(Date fechaInici
 
     // Metodo para obtener inscripciones de un socio mediante numeroSocio
 
-    public static String[] obtenerInscripcionesByNumSocio(int numeroSocio) {
+    public static ArrayList<InscripcionModel> obtenerInscripcionesByNumSocio(int numeroSocio) {
         crearSessionHib();
-        List<InscripcionHib> inscripcionesSocio = null;
+        List<InscripcionHib> inscripcionesSocioHib = null;
+        ArrayList<InscripcionModel> inscripcionesSocioModel = new ArrayList<>();
         try {
             // Crear la sesión de Hibernate
             session = sessionFactory.openSession();
-            inscripcionesSocio = session
+            inscripcionesSocioHib = session
                     .createQuery("FROM InscripcionHib WHERE numeroSocio = :numeroSocio", InscripcionHib.class)
                     .setParameter("numeroSocio", numeroSocio).list();
         } catch (Exception e) {
@@ -320,24 +321,15 @@ public static ArrayList<InscripcionModel> objetoListaInscripcion(Date fechaInici
             // Cerramos la fábrica de sesiones de Hibernate para liberar recursos
             sessionFactory.close();
         }
-        double total = 0.0;
-        StringBuilder listado = new StringBuilder("\n    - Lista de inscripciones del socio: ");
-        int contador = 0;
-        for (InscripcionHib inscripcion : inscripcionesSocio) {
-            contador++;
-            ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
-            Double precioExcursion = excursion.getPrecioInscripcion();
-            String descripcionExcursion = excursion.getDescripcion();
-            listado.append("\n- ").append(contador).append(". ID Inscripción: ")
-                    .append(inscripcion.getNumeroInscripcion())
-                    .append(" | Precio excursion: ").append(precioExcursion)
-                    .append(" | Descripcion excursion: ").append(descripcionExcursion);
-            total += precioExcursion;
+        for (InscripcionHib inscripcion : inscripcionesSocioHib) {
+            inscripcionesSocioModel.add(new InscripcionModel(
+                inscripcion.getNumeroInscripcion(),
+                inscripcion.getNumeroSocio(),
+                inscripcion.getNumeroExcursion(),
+                inscripcion.getFechaInscripcion()
+            ));
         }
-        if (contador == 0) {
-            listado.append("\n - Sin inscripciones.");
-        }
-        return new String[] { listado.toString(), String.valueOf(total) };
+        return inscripcionesSocioModel;
     }
 
     // Metodo para comprobar si un usuario tiene inscripciones
