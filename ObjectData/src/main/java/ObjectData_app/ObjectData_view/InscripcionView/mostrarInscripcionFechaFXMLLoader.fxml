@@ -38,13 +38,8 @@
          <columns>
             <TableColumn fx:id="taNumeroInscripcion" prefWidth="100.0" text="Núm inscripción" />
             <TableColumn fx:id="taNumeroExcursion" prefWidth="140.0" text="Num Excursion" />
-            <TableColumn fx:id="taNumeroSocio" prefWidth="100.0" text="Num Socio" />
+            <TableColumn fx:id="taNumeroSocio1" prefWidth="100.0" text="Num Socio" />
             <TableColumn fx:id="taFecha" prefWidth="120.0" text="Fecha Inscripcion" />
-            <TableColumn fx:id="taNombreExcursion" prefWidth="120.0" text="Nombre Excursion" />
-            <TableColumn fx:id="taNombreSocio" prefWidth="120.0" text="Nombre Socio" />
-            <TableColumn fx:id="taPrecioInscripcion" prefWidth="100.0" text="Precio Inscripcion" />
-            <TableColumn fx:id="taPrecioTotal" prefWidth="100.0" text="Precio Total" />
-            <TableColumn fx:id="taCadenaDescuento" prefWidth="200.0" text="Cadena Descuento" />
          </columns>
       </TableView>
    </children>

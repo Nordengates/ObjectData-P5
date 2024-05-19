@@ -37,7 +37,7 @@
       <TextField fx:id="tfNumeroSocio" layoutX="562.0" layoutY="61.0" prefHeight="25.0" prefWidth="143.0" />
       <TableView fx:id="taTodosLosSocios" layoutX="334.0" layoutY="89.0" prefHeight="162.0" prefWidth="372.0">
         <columns>
-          <TableColumn fx:id="taNumeroSocio1" prefWidth="104.0" text="Numero" />
+          <TableColumn fx:id="taNumeroSocio" prefWidth="104.0" text="Numero" />
           <TableColumn fx:id="taNombre" prefWidth="267.0" text="Nombre" />
         </columns>
       </TableView>

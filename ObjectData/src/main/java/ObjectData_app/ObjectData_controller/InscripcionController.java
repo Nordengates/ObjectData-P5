@@ -16,8 +16,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -29,15 +27,11 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import ObjectData_app.ObjectData_model.ExcursionModel;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 public class InscripcionController {
@@ -46,7 +40,6 @@ public class InscripcionController {
 
     @FXML
     private DatePicker tfFechaInicioinscripcion;
-
     @FXML
     private DatePicker tfFechaFinInscripcion;
 
@@ -57,11 +50,13 @@ public class InscripcionController {
     private TableColumn<Object, Integer> taNumeroSocio;
     @FXML
     private TableColumn<Object, String> taNombre;
+
     // Filtro para la tabla
     @FXML
     private TextField tfNumeroSocio;
     @FXML
     private FilteredList<Object> filteredData;
+
     // Tabla para mostrar inscripciones en mostrar por socio:
     @FXML
     private TableView<Object> taTodasLasInscripciones;
@@ -72,38 +67,18 @@ public class InscripcionController {
     @FXML
     private TableColumn<Object, String> taFechaExcursion;
 
-
-
-
+    //Declaracion de los ID de la tabla de resultados de inscripción en mostrar por fecha
     @FXML
     private TableView<InscripcionModel> taResultadoInscripcion;
-
     @FXML
     private TableColumn<InscripcionModel, Integer> taNumeroInscripcion;
-
     @FXML
     private TableColumn<InscripcionModel, Integer> taNumeroSocio1;
-
     @FXML
     private TableColumn<InscripcionModel, Integer> taNumeroExcursion;
-
     @FXML
     private TableColumn<InscripcionModel, Date> taFecha;
 
-    @FXML
-    private TableColumn<InscripcionModel, String> taNombreExcursion;
-
-    @FXML
-    private TableColumn<InscripcionModel, String> taNombreSocio;
-
-    @FXML
-    private TableColumn<InscripcionModel, Double> taPrecio;
-
-    @FXML
-    private TableColumn<InscripcionModel, Double> taPrecioTotal;
-
-    @FXML
-    private TableColumn<InscripcionModel, String> taDescuento;
 
     @FXML
     private Text tInfo;
