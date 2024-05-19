@@ -301,7 +301,6 @@ public static ArrayList<InscripcionModel> objetoListaInscripcion(Date fechaInici
     }
 
     // Metodo para obtener inscripciones de un socio mediante numeroSocio
-
     public static ArrayList<InscripcionModel> obtenerInscripcionesByNumSocio(int numeroSocio) {
         crearSessionHib();
         List<InscripcionHib> inscripcionesSocioHib = null;

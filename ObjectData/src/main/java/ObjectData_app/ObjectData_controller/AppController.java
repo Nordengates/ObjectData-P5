@@ -192,6 +192,24 @@ public class AppController {
     @FXML
     public void eliminarInscripcionFXMLLoader() {
         FXMLLoader("/ObjectData_app/ObjectData_view/InscripcionView/eliminarInscripcionFXMLLoader.fxml");
+        // Cargar el archivo FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/mostrarInscripcionSocioFXMLLoader.fxml"));
+        try {
+            Parent root = loader.load();
+            // Establecer el contenido cargado en el centro del BorderPane
+            mainContainer.setCenter(root);
+            // Obtener el controlador del formulario cargado
+            InscripcionController inscripcionController = loader.getController();
+            //Cargamos los socios en la tabla
+            inscripcionController.cargarLosSociosEnTabla();
+            //Cargamos el filtro
+            inscripcionController.filtrarSocioPorNumeroEnTabla();
+            //Funcion para cargar inscripciones
+            inscripcionController.obtenerInscripciones();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        actionEliminarInscripcion();
     }
 
     // Estos metodos cargan los FXML cuyo controlador es ExcursionController

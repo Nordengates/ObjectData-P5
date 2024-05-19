@@ -276,7 +276,7 @@ public class InscripcionController {
         });
     }
 
-    public static void eliminarInscripcion() {
+    public static void actionEliminarInscripcion() {
         String listadoInscripciones = "";
         boolean inscripcionEliminada = false;
 

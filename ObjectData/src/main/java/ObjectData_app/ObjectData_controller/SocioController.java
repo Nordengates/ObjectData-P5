@@ -111,9 +111,10 @@ public class SocioController {
 
     @FXML
     public void initializeForm() {
-        if (cbTipoSeguro != null)
+        if (cbTipoSeguro != null){
             cbTipoSeguro.getItems().addAll("1 - Básico", "2 - Completo");
-        limpiarAvisoEliminacion();
+            tInfo.setText("");            
+        }
     }
 
     public void inicializarScreenEliminacion() {
@@ -122,7 +123,7 @@ public class SocioController {
                 System.out.println(newSelection);
             }
         });
-        limpiarAvisoEliminacion();
+        tInfo.setText("");
         // Configurar las columnas de la tabla de eliminación de socios
         if (taNumeroSocio != null)
             taNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
@@ -374,41 +375,23 @@ public class SocioController {
 
     @FXML
     public void accionEliminarSocio() {
-        boolean inscritoEnExcursion = false;
         taTodosLosSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            boolean inscritoEnExcursion = false;
             if (newSelection != null) {
                 int numeroSocio = ((SocioModel) newSelection).getNumeroSocio();
                 String tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
                 // Eliminar el socio según su tipo
                 try {
-                    // try {
-                    // inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
-                    // } catch (Exception e) {
-                    // mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:" +
-                    // e.getMessage());
-                    // return;
-                    // }
-                    // // Verificar si el socio está inscrito en alguna excursión
-                    // try {
-                    // inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
-                    // } catch (Exception e) {
-                    // mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:" +
-                    // e.getMessage());
-                    // return;
-                    // }
-                    // if (inscritoEnExcursion) {
-                    // // Mostrar mensaje de que el socio está inscrito en una excursión y no puede
-                    // ser
-                    // // eliminado
-                    // mostrarAvisoEliminacion("El socio con número de socio " + numeroSocio
-                    // + " está inscrito en una excursión y no puede ser eliminado.");
-                    // return;
-                    // }
+                    inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
+                    if (!inscritoEnExcursion) {
+                    // Mostrar mensaje de que el socio está inscrito en una excursión y no puede ser eliminado
+                        NotificacionView.Notificacion("Warning", "Usuario con inscripciones", "Este usuario tiene inscripciones y no se puede eliminar");
+                        return;
+                    }
                     Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
                     alertConfirmation.setTitle("Confirmación de Eliminación");
                     alertConfirmation.setHeaderText(null);
-                    alertConfirmation.setContentText(
-                            "¿Estás seguro de que deseas eliminar al socio con número de socio " + numeroSocio + "?");
+                    alertConfirmation.setContentText("¿Estás seguro de que deseas eliminar al socio con número de socio " + numeroSocio + "?");
                     Optional<ButtonType> result = alertConfirmation.showAndWait();
                     if (result.isPresent() && result.get() != ButtonType.OK) {
                         return;
