@@ -33,7 +33,7 @@ public class ExcursionController {
     @FXML
     private TextField tfPrecioInscripcion;
     @FXML
-    private Button btCrear;
+    private Button btBoton;
 
     @FXML
     private DatePicker tfFechaInicioExcursion;

@@ -102,13 +102,13 @@ public class InscripcionController {
     private TextField tfNumExc;
 
     @FXML
-    private Button btCrear;
+    private Button btBoton;
 
     @FXML
-    private Button btCrear2;
+    private Button btBoton2;
 
     @FXML
-    private Button btCrear3;
+    private Button btBoton3;
 
     @FXML
     private TableView<SocioEstandarModel> taSocios;

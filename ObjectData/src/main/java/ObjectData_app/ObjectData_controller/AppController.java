@@ -66,7 +66,7 @@ public class AppController {
             controller.cargarLosSociosEnTabla();
             // Llamar al método filtrarSocioPorNumeroEnTabla() en el controlador
             controller.filtrarSocioPorNumeroEnTabla();
-            //controller.crearSocioInfantil();
+            // controller.crearSocioInfantil();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,7 +116,20 @@ public class AppController {
 
     @FXML
     public void modificarSeguroFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/SocioView/modificarSeguroFXMLLoader.fxml");
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/ObjectData_app/ObjectData_view/SocioView/modificarSeguroFXMLLoader.fxml"));
+        try {
+            Parent formulario = loader.load();
+            mainContainer.setCenter(formulario);
+            // Obtener el controlador del formulario cargado
+            SocioController controller = loader.getController();
+            // Llamar al método cargarSociosEstandarEnTabla() en el controlador para cargar
+            // los
+            // socios
+            controller.cargarSociosEstandarEnTabla();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -128,7 +141,8 @@ public class AppController {
             mainContainer.setCenter(formulario);
             // Obtener el controlador del formulario cargado
             SocioController controller = loader.getController();
-            // Llamar al método cargarLosSociosEnTabla() en el controlador para cargar los socios
+            // Llamar al método cargarLosSociosEnTabla() en el controlador para cargar los
+            // socios
             controller.cargarLosSociosEnTabla();
             // Llamar al método filtrarSocioPorNumeroEnTabla() en el controlador
             controller.filtrarSocioPorNumeroEnTabla();
@@ -144,14 +158,15 @@ public class AppController {
     @FXML
     public void nuevaInscripcionFXMLLoader() {
         // Cargar el archivo FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
         try {
             Parent root = loader.load();
             // Obtener el controlador del formulario cargado
             InscripcionController inscripcionController = loader.getController();
-            //Cargamos los socios en la tabla
+            // Cargamos los socios en la tabla
             inscripcionController.cargarLosSociosEnTabla();
-            //Cargamos el filtro
+            // Cargamos el filtro
             inscripcionController.filtrarSocioPorNumeroEnTabla();
             // Llamar al método crearInscripcion() en el controlador
             inscripcionController.crearInscripcion();
@@ -171,18 +186,19 @@ public class AppController {
     @FXML
     public void mostrarInscripcionSocioFXMLLoader() {
         // Cargar el archivo FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/mostrarInscripcionSocioFXMLLoader.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/ObjectData_app/ObjectData_view/InscripcionView/mostrarInscripcionSocioFXMLLoader.fxml"));
         try {
             Parent root = loader.load();
             // Establecer el contenido cargado en el centro del BorderPane
             mainContainer.setCenter(root);
             // Obtener el controlador del formulario cargado
             InscripcionController inscripcionController = loader.getController();
-            //Cargamos los socios en la tabla
+            // Cargamos los socios en la tabla
             inscripcionController.cargarLosSociosEnTabla();
-            //Cargamos el filtro
+            // Cargamos el filtro
             inscripcionController.filtrarSocioPorNumeroEnTabla();
-            //Funcion para cargar inscripciones
+            // Funcion para cargar inscripciones
             inscripcionController.obtenerInscripciones();
         } catch (IOException e) {
             e.printStackTrace();

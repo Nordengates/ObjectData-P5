@@ -31,7 +31,7 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <Button fx:id="btCrearSocioFederado" layoutX="318.0" layoutY="443.0" mnemonicParsing="false" onAction="#crearSocioFederado" prefHeight="25.0" prefWidth="105.0" text="Crear" />
+      <Button fx:id="btBoton" layoutX="318.0" layoutY="443.0" mnemonicParsing="false" onAction="#crearSocioFederado" prefHeight="25.0" prefWidth="105.0" text="Crear" />
       <ComboBox fx:id="cbFederaciones" layoutX="77.0" layoutY="177.0" prefHeight="25.0" prefWidth="571.0" />
    </children>
 </AnchorPane>
