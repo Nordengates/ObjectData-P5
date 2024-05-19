@@ -4,9 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioFederadoHib;
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.SocioInfantilHib;
-import javafx.beans.value.ObservableValue;
 
 import java.util.ArrayList;
 import java.util.List;

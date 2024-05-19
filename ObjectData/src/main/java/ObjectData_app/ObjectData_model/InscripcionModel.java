@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ObjectData_app.ObjectData_model.ObjectData_Hibernate.ExcursionModelHib;
 import ObjectData_app.ObjectData_model.ObjectData_Hibernate.InscripcionHib;
 
 import org.hibernate.HibernateException;
