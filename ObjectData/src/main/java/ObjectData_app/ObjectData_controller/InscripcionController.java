@@ -287,30 +287,29 @@ public class InscripcionController {
 
     public void actionEliminarInscripcion() {
         taTodasLasInscripciones.getSelectionModel().selectedItemProperty()
-            .addListener((obs, oldSelection, newSelection) -> {
-                if (newSelection != null) {
-                    String[] datos = (String[]) newSelection;
-                    try {
-                        Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
-                        alertConfirmation.setTitle("Confirmación de Eliminación");
-                        alertConfirmation.setHeaderText(null);
-                        alertConfirmation.setContentText(
-                                "¿Estás seguro de que deseas eliminar la inscripción con número: "
-                                        + datos[0] + "?");
-                        Optional<ButtonType> result = alertConfirmation.showAndWait();
-                        if (result.isPresent() && result.get() != ButtonType.OK) {
-                            return;
+                .addListener((obs, oldSelection, newSelection) -> {
+                    if (newSelection != null) {
+                        String[] datos = (String[]) newSelection;
+                        try {
+                            Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+                            alertConfirmation.setTitle("Confirmación de Eliminación");
+                            alertConfirmation.setHeaderText(null);
+                            alertConfirmation.setContentText(
+                                    "¿Estás seguro de que deseas eliminar la inscripción con número: "
+                                            + datos[0] + "?");
+                            Optional<ButtonType> result = alertConfirmation.showAndWait();
+                            if (result.isPresent() && result.get() != ButtonType.OK) {
+                                return;
+                            }
+                            InscripcionModel.eliminarInscripcionNumero(Integer.parseInt(datos[0]));
+                            NotificacionView.Notificacion("INFORMATION", "Inscripción eliminada",
+                                    "La inscripción se a eliminado con exito!!");
+                        } catch (Exception e) {
+                            NotificacionView.Notificacion("Error", "Error en el controlador",
+                                    "Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
                         }
-                        InscripcionModel.eliminarInscripcionNumero(Integer.parseInt(datos[0]));
-                        NotificacionView.Notificacion("INFORMATION", "Inscripción eliminada",
-                                "La inscripción se a eliminado con exito!!");                        
-                        obtenerInscripciones();
-                    } catch (Exception e) {
-                        NotificacionView.Notificacion("Error", "Error en el controlador",
-                                "Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
                     }
-                }
-            });
+                });
     }
 
     public void mostrarInscripcionPorFecha() {
