@@ -3,10 +3,17 @@ package ObjectData_app.ObjectData_controller;
 //Se añade la vista principal
 import ObjectData_app.ObjectData_model.InscripcionModel;
 import ObjectData_app.ObjectData_model.SocioEstandarModel;
+import ObjectData_app.ObjectData_model.SocioFederadoModel;
+import ObjectData_app.ObjectData_model.SocioInfantilModel;
 import ObjectData_app.ObjectData_model.SocioModel;
 import ObjectData_app.ObjectData_view.*;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,6 +50,31 @@ public class InscripcionController {
     @FXML
     private DatePicker tfFechaFinInscripcion;
 
+    // Tabla para mostrar todos los socios:
+    @FXML
+    private TableView<Object> taTodosLosSocios;
+    @FXML
+    private TableColumn<Object, Integer> taNumeroSocio;
+    @FXML
+    private TableColumn<Object, String> taNombre;
+    // Filtro para la tabla
+    @FXML
+    private TextField tfNumeroSocio;
+    @FXML
+    private FilteredList<Object> filteredData;
+    // Tabla para mostrar inscripciones en mostrar por socio:
+    @FXML
+    private TableView<Object> taTodasLasInscripciones;
+    @FXML
+    private TableColumn<Object, String> taNumInscripcion;
+    @FXML
+    private TableColumn<Object, String> taDescripcionExcursion;
+    @FXML
+    private TableColumn<Object, String> taFechaExcursion;
+
+
+
+
     @FXML
     private TableView<InscripcionModel> taResultadoInscripcion;
 
@@ -50,7 +82,7 @@ public class InscripcionController {
     private TableColumn<InscripcionModel, Integer> taNumeroInscripcion;
 
     @FXML
-    private TableColumn<InscripcionModel, Integer> taNumeroSocio;
+    private TableColumn<InscripcionModel, Integer> taNumeroSocio1;
 
     @FXML
     private TableColumn<InscripcionModel, Integer> taNumeroExcursion;
@@ -75,6 +107,9 @@ public class InscripcionController {
 
     @FXML
     private Text tInfo;
+
+    @FXML
+    private Text tInfo1;
 
     @FXML
     private BorderPane mainContainer;
@@ -117,7 +152,7 @@ public class InscripcionController {
 
     @FXML
     private TableColumn<ExcursionModel, String> taDesc;
-// Se inicializan las vistas necasias.
+    // Se inicializan las vistas necasias.
 
     // Metodo para crear ID de inscripcion dinamicos
     public static int generarID() {
@@ -132,223 +167,177 @@ public class InscripcionController {
         return id;
     }
 
-    public void inicializarTabla() {
-        taNumero.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
-        taDesc.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-        
-        taExcursion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                Integer contenidoCelda = newSelection.getNumeroExcursion();
-                final Clipboard clipboard = Clipboard.getSystemClipboard();
-                final ClipboardContent content = new ClipboardContent();
-                content.putString(contenidoCelda.toString());
-                clipboard.setContent(content);
-                tfNumExc.setText(contenidoCelda.toString());
-                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
-            }
-        });
-    }
-
-    public void inicializarTabla2()
-    {
-        taN.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
-        taD.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        
-        taSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                Integer contenidoCelda = newSelection.getNumeroSocio();
-                final Clipboard clipboard = Clipboard.getSystemClipboard();
-                final ClipboardContent content = new ClipboardContent();
-                content.putString(contenidoCelda.toString());
-                clipboard.setContent(content);
-                tfNumSocio.setText(contenidoCelda.toString());
-                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
-            }
-        });
-    }
-
-
     @FXML
     // Metodo para crear una Inscripcion
     public void crearInscripcion() {
-        inicializarTabla();
-        inicializarTabla2();
-        List<SocioEstandarModel> socios = SocioEstandarModel.obtenerSocios();
-        List<ExcursionModel> excursiones = ExcursionModel.obtenerListadoExcursiones();
-        
-        // Convertir la lista a una ObservableList
-        ObservableList<ExcursionModel> observableList = FXCollections.observableArrayList(excursiones);
-        ObservableList<SocioEstandarModel> observableList2 = FXCollections.observableArrayList(socios);
-
-        // Asignar la lista al TableView
-        taExcursion.setItems(observableList);
-        taSocios.setItems(observableList2);
-        
-             
-        // Obtiene y muestra el listado de excursiones
-        List<ExcursionModel> listadoExcursiones = ExcursionModel.obtenerListadoExcursiones();
-        //String retornoExcursion = InscView.formListadoExcursionesView(listadoExcursiones[0]);
-       // if (retornoExcursion.matches("\\d+")) {
-         //   int opcion = Integer.parseInt(retornoExcursion);
-           // numeroExcursion = ExcursionModel.obtenerExcursionDesdeLista(opcion).getNumeroExcursion();
-       // } else {
-         //   RespView.excepcionesControllerView("Debes introducir un valor númerico.");
-          //  return;
-        //}
-
-        // Comprueba si la excursión existe
-        
-
-        // Genera un número de inscripción aleatorio
-        
-        //RespView.respuestaControllerView("- Número de inscripción generado: " + numeroInscripcion);
-// Obtener el texto de los TextField
-String textoNumSocio = tfNumSocio.getText();
-String textoNumExc = tfNumExc.getText();
-// Verificar si las cadenas no están vacías antes de continuar
-
-// Crear un objeto InscripcionModel, convirtiendo los textos a números
-//InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion,
-  //                                                  Integer.parseInt(textoNumSocio),
-    //                                                Integer.parseInt(textoNumExc),
-      //                                              new Date());
-       // try {
-         //   String respuest = InscripcionModel.crearInscripcion(inscripcion);
-          //  RespView.respuestaControllerView(respuest);
-        //} catch (Exception e) {
-           // RespView.excepcionesControllerView(e.getMessage());
-        //}
-    }
-  @FXML
-private void handleCrearInscripcion(ActionEvent event) {
-    // Obtener el texto de los campos de texto
-    String textoNumSocio = tfNumSocio.getText();
-    String textoNumExc = tfNumExc.getText();
-    int numeroInscripcion = Integer.parseInt("9" + generarID());
-
-    // Verificar si los campos no están vacíos
-    if (!textoNumSocio.isEmpty() && !textoNumExc.isEmpty()) {
-        try {
-            // Convertir los textos a números
-            int numeroSocio = Integer.parseInt(textoNumSocio);
-            int numeroExcursion = Integer.parseInt(textoNumExc);
-
-            // Crear un objeto InscripcionModel
-            InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion, numeroSocio, numeroExcursion, new Date());
-
-            // Llamar al método para crear la inscripción
-            String respuesta = InscripcionModel.crearInscripcion(inscripcion);
-
-            // Mostrar mensaje de éxito
-            NotificacionView.Notificacion("INFORMATION", "Éxito", "La inscripción se ha creado correctamente.");
-            // Cargar el formulario deseado en el mainContainer del contenedor principal
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/AppWindowsView.fxml"));
-            Parent root = loader.load();
-            mainContainer.setCenter(root);
-            return;
-            
-        } catch (NumberFormatException e) {
-            // Mostrar mensaje de error
-            NotificacionView.Notificacion("ERROR", "Error", "Los campos deben contener valores numéricos.");
-        } catch (Exception e) {
-            // Mostrar mensaje de error con la excepción
-            NotificacionView.Notificacion("ERROR", "Error", "Ha ocurrido un error: " + e.getMessage());
-        }
-    } else {
-        // Mostrar mensaje de error
-        NotificacionView.Notificacion("ERROR", "Error", "Los campos no pueden estar vacíos.");
-    }
-
-}
-
-
-
-    public static void mostrarInscripcion() {
-        boolean valoresComprobados = false;
-        int opcion = 0;
-        do {
-            String retorno = InscView.formMostrarInscripcionView();
-            if (retorno.matches("\\d+")) {
-                opcion = Integer.parseInt(retorno);
-            } else {
-                RespView.excepcionesControllerView("Debes introducir un valor númerico.");
-                continue;
+        taNumero.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
+        taDesc.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        taExcursion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Integer contenidoCelda = newSelection.getNumeroExcursion();
+                tfNumExc.setText(contenidoCelda.toString());
             }
-
-            if (opcion == 0) {
-                break;
-            } else if (opcion == 1 || opcion == 2) {
-                valoresComprobados = true;
-            } else {
-                RespView.excepcionesControllerView("Debes selecciona una opcion valida.");
-                continue;
+        });
+        taTodosLosSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Integer contenidoCelda = ((SocioModel) newSelection).getNumeroSocio();
+                tfNumSocio.setText(contenidoCelda.toString());
             }
-        } while (!valoresComprobados);
-        switch (opcion) {
-            case 1:
-                mostrarInscripcionPorSocio();
-                break;
-            case 2:
-                mostrarInscripcionPorFecha();
-                break;
-        }
-    }
-
-    public static void mostrarInscripcionPorSocio() 
-    {
-        String[] retorno = InscView.formFiltrarPorSocio();
-        if (retorno != null && retorno.length > 0) {
-            String numSocio = retorno[0];
-            if (!numSocio.isEmpty() && numSocio.matches("\\d+")) { // Verifica si la cadena no está vacía y contiene
-                                                                   // solo dígitos
-                int numeroSocio = Integer.parseInt(numSocio);
+        });
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
                 try {
-                    RespView.respuestaControllerView("Listado de todas las inscripciones para el socio seleccionado: "
-                            + InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio)[0]);
-                } catch (Exception e) {
-                    RespView.excepcionesControllerView(
-                            "Error. No se ha podido obtener las inscripciones." + e.getMessage());
-                }
-            } else {
-                RespView.excepcionesControllerView("El número de socio ingresado no es válido.");
+                    ArrayList<ExcursionModel> excursiones = ExcursionModel.obtenerListadoExcursiones();
+                    ObservableList<ExcursionModel> observableList = FXCollections.observableArrayList(excursiones);
+                    taExcursion.setItems(observableList);
+                }catch (Exception e){}
+                return null;
             }
-        }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 
-    public static void eliminarInscripcion() 
-    {
+    @FXML
+    private void handleCrearInscripcion(ActionEvent event) {
+        // Obtener el texto de los campos de texto
+        String textoNumSocio = tfNumSocio.getText();
+        String textoNumExc = tfNumExc.getText();
+        int numeroInscripcion = Integer.parseInt("9" + generarID());
+        // Verificar si los campos no están vacíos
+        if (!textoNumSocio.isEmpty() && !textoNumExc.isEmpty()) {
+            try {
+                // Convertir los textos a números
+                int numeroSocio = Integer.parseInt(textoNumSocio);
+                int numeroExcursion = Integer.parseInt(textoNumExc);
+
+                // Crear un objeto InscripcionModel
+                InscripcionModel inscripcion = new InscripcionModel(numeroInscripcion, numeroSocio, numeroExcursion,
+                        new Date());
+
+                // Llamar al método para crear la inscripción
+                String respuesta = InscripcionModel.crearInscripcion(inscripcion);
+
+                // Mostrar mensaje de éxito
+                NotificacionView.Notificacion("INFORMATION", "Éxito", "La inscripción se ha creado correctamente.");
+                return;
+
+            } catch (NumberFormatException e) {
+                // Mostrar mensaje de error
+                NotificacionView.Notificacion("ERROR", "Error", "Los campos deben contener valores numéricos.");
+            } catch (Exception e) {
+                // Mostrar mensaje de error con la excepción
+                NotificacionView.Notificacion("ERROR", "Error", "Ha ocurrido un error: " + e.getMessage());
+            }
+        } else {
+            // Mostrar mensaje de error
+            NotificacionView.Notificacion("WARNING", "Error", "Los campos no pueden estar vacíos.");
+        }
+
+    }
+
+    public void obtenerInscripciones() {
+        taTodosLosSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                tInfo1.setText("Obteniendo inscripciones ...");
+                // Inicializamos la tabla de facturación
+                taNumInscripcion.setCellValueFactory(cellData -> {
+                    Object item = cellData.getValue();
+                    if (item instanceof String[]) {
+                        String[] values = (String[]) item;
+                        return new SimpleStringProperty(values[0]);
+                    }
+                    return null;
+                });
+                taDescripcionExcursion.setCellValueFactory(cellData -> {
+                    Object item = cellData.getValue();
+                    if (item instanceof String[]) {
+                        String[] values = (String[]) item;
+                        return new SimpleStringProperty(values[1]);
+                    }
+                    return null;
+                });
+                taFechaExcursion.setCellValueFactory(cellData -> {
+                    Object item = cellData.getValue();
+                    if (item instanceof String[]) {
+                        String[] values = (String[]) item;
+                        return new SimpleStringProperty(values[2]);
+                    }
+                    return null;
+                });
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() {
+                        try {
+                            String[] listaInscripciones = {};
+                            ArrayList<String[]> listaInscripcionesArrayList = new ArrayList<>();
+                            int numeroSocio = ((SocioModel) newSelection).getNumeroSocio();
+                            ArrayList<InscripcionModel> inscripcionesSocioModel = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
+                            for (InscripcionModel inscripcion : inscripcionesSocioModel) {
+                                //Obtenemos la excursión
+                                ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                Integer numIns = inscripcion.getNumeroInscripcion();
+                                Date fecha = excursion.getFecha();
+                                listaInscripciones = new String[] { numIns.toString(), excursion.getDescripcion(), fecha.toString()};
+                                listaInscripcionesArrayList.add(listaInscripciones);
+                            }
+                            taTodasLasInscripciones.setItems(FXCollections.observableArrayList(listaInscripcionesArrayList));
+                            return null;
+                        } catch (Exception e) {
+                            Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
+                                    "Error en el controlador: " + e.getMessage()));
+                        } finally {
+                            Platform.runLater(() -> tInfo1.setText(""));
+                        }
+                        return null;
+                    }
+                };
+                Thread thread = new Thread(task);
+                thread.setDaemon(true);
+                thread.start();
+            }
+        });
+    }
+
+    public static void eliminarInscripcion() {
         String listadoInscripciones = "";
         boolean inscripcionEliminada = false;
 
-        //try {
-          //  listadoInscripciones = InscripcionModel.obtenerListadoInscripciones();
-        //} catch (Exception e) {
-     //       RespView.excepcionesControllerView(e.getMessage());
-        //}
-       // RespView.respuestaControllerView(listadoInscripciones);
-        //String retorno = InscView.formEliminarInscripcionView(listadoInscripciones);
-       // int num;
+        // try {
+        // listadoInscripciones = InscripcionModel.obtenerListadoInscripciones();
+        // } catch (Exception e) {
+        // RespView.excepcionesControllerView(e.getMessage());
+        // }
+        // RespView.respuestaControllerView(listadoInscripciones);
+        // String retorno = InscView.formEliminarInscripcionView(listadoInscripciones);
+        // int num;
         // Manejar el caso en que el usuario no ingrese un número válido
-       // if (retorno.matches("\\d+")) {
-         //   num = Integer.parseInt(retorno);
-       // } else {
-         //   RespView.excepcionesControllerView("El número de inscripción ingresado no es válido.");
-        //    return;
-        //}
+        // if (retorno.matches("\\d+")) {
+        // num = Integer.parseInt(retorno);
+        // } else {
+        // RespView.excepcionesControllerView("El número de inscripción ingresado no es
+        // válido.");
+        // return;
+        // }
 
-        //try {
-          //  inscripcionEliminada = InscripcionModel.eliminarInscripcionNumero(num);
-        //} catch (Exception e) {
-            //RespView.excepcionesControllerView(e.getMessage());
-        //}
+        // try {
+        // inscripcionEliminada = InscripcionModel.eliminarInscripcionNumero(num);
+        // } catch (Exception e) {
+        // RespView.excepcionesControllerView(e.getMessage());
+        // }
 
-        //if (inscripcionEliminada) {
-            //RespView.respuestaControllerView("La inscripción ha sido eliminada exitosamente.");
-        //} else {
-            //RespView.excepcionesControllerView(
-          //          "No se pudo eliminar la inscripción. Verifique el número de inscripción y asegúrese de que la fecha de inscripción sea anterior a la fecha de la excursión.");
-        //}
-    
+        // if (inscripcionEliminada) {
+        // RespView.respuestaControllerView("La inscripción ha sido eliminada
+        // exitosamente.");
+        // } else {
+        // RespView.excepcionesControllerView(
+        // "No se pudo eliminar la inscripción. Verifique el número de inscripción y
+        // asegúrese de que la fecha de inscripción sea anterior a la fecha de la
+        // excursión.");
+        // }
+
     }
 
     public void mostrarInscripcionPorFecha() {
@@ -368,9 +357,8 @@ private void handleCrearInscripcion(ActionEvent event) {
             return;
         }
 
-        
         taNumeroInscripcion.setCellValueFactory(new PropertyValueFactory<>("numeroInscripcion"));
-        taNumeroSocio.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
+        taNumeroSocio1.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
         taNumeroExcursion.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
         taFecha.setCellValueFactory(new PropertyValueFactory<>("fechaInscripcion"));
         taResultadoInscripcion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -383,10 +371,10 @@ private void handleCrearInscripcion(ActionEvent event) {
                 NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
             }
         });
-            // Supongamos que tienes dos variables para almacenar las fechas seleccionadas
+        // Supongamos que tienes dos variables para almacenar las fechas seleccionadas
         
-// Verificar si las fechas seleccionadas no son nulas
- if (fechaInicio != null && fechaFin != null) {
+    // Verificar si las fechas seleccionadas no son nulas
+    if (fechaInicio != null && fechaFin != null) {
         // Supongamos que listarInscripcionesFecha retorna una lista de inscripciones
         ArrayList<InscripcionModel> inscripciones = InscripcionModel.objetoListaInscripcion(fechaInicio, fechaFin);
         
@@ -397,4 +385,86 @@ private void handleCrearInscripcion(ActionEvent event) {
         taResultadoInscripcion.setItems(observableInscripciones);
     }
 }
+
+    // Este metodo permite filtrar usuarios en la tabla usando un TextField con
+    // fx:id
+    // tfNumeroSocio
+    public void filtrarSocioPorNumeroEnTabla() {
+        tfNumeroSocio.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(socio -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String numeroSocio = String.valueOf(((SocioModel) socio).getNumeroSocio());
+                return numeroSocio.contains(newValue);
+            });
+        });
+    }
+
+    // Este metodo permite cargar usuarios en la tabla, el nombre de la tabla,
+    // columnas y aviso de carga de datos son:
+    // tabla-id:taTodosLosSocios // column-id:taNumeroSocio
+    // column-id:taNombre // text-id:tInfo
+    @FXML
+    public void cargarLosSociosEnTabla() {
+        tInfo.setText("Cargando datos ...");
+        // Iniciamos la tabla
+        taNumeroSocio.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof SocioEstandarModel) {
+                SocioEstandarModel socio = (SocioEstandarModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            } else if (item instanceof SocioFederadoModel) {
+                SocioFederadoModel socio = (SocioFederadoModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            } else if (item instanceof SocioInfantilModel) {
+                SocioInfantilModel socio = (SocioInfantilModel) item;
+                return new SimpleIntegerProperty(socio.getNumeroSocio()).asObject();
+            }
+            return null;
+        });
+        taNombre.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof SocioEstandarModel) {
+                SocioEstandarModel socio = (SocioEstandarModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            } else if (item instanceof SocioFederadoModel) {
+                SocioFederadoModel socio = (SocioFederadoModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            } else if (item instanceof SocioInfantilModel) {
+                SocioInfantilModel socio = (SocioInfantilModel) item;
+                return new SimpleStringProperty(socio.getNombre());
+            }
+            return null;
+        });
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    // Obtenemos los objetos de los socios
+                    ArrayList<SocioEstandarModel> socioEstandarModels = SocioEstandarModel.obtenerSocios();
+                    ArrayList<SocioFederadoModel> socioFederadoModels = SocioFederadoModel.obtenerSocios();
+                    ArrayList<SocioInfantilModel> socioInfantilModels = SocioInfantilModel.obtenerSocios();
+                    // Create an ObservableList and add the items to it
+                    ObservableList<Object> allSocios = FXCollections.observableArrayList();
+                    allSocios.addAll(socioEstandarModels);
+                    allSocios.addAll(socioFederadoModels);
+                    allSocios.addAll(socioInfantilModels);
+                    // Objetos filtrados si es necesario
+                    filteredData = new FilteredList<>(allSocios);
+                    // Añadimos los socios a la tabla
+                    taTodosLosSocios.setItems(filteredData);
+                } catch (Exception e) {
+                    Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
+                            "Error en el controlador: " + e.getMessage()));
+                } finally {
+                    Platform.runLater(() -> tInfo.setText(""));
+                }
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
 }

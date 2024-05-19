@@ -143,17 +143,18 @@ public class AppController {
     // (Gestión Inscripciones)
     @FXML
     public void nuevaInscripcionFXMLLoader() {
+        // Cargar el archivo FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
         try {
-            // Cargar el archivo FXML
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/ObjectData_app/ObjectData_view/InscripcionView/nuevaInscripcionFXMLLoader.fxml"));
             Parent root = loader.load();
-
             // Obtener el controlador del formulario cargado
-            InscripcionController controller = loader.getController();
+            InscripcionController inscripcionController = loader.getController();
+            //Cargamos los socios en la tabla
+            inscripcionController.cargarLosSociosEnTabla();
+            //Cargamos el filtro
+            inscripcionController.filtrarSocioPorNumeroEnTabla();
             // Llamar al método crearInscripcion() en el controlador
-            controller.crearInscripcion();
-
+            inscripcionController.crearInscripcion();
             // Establecer el contenido cargado en el centro del BorderPane
             mainContainer.setCenter(root);
 
@@ -169,7 +170,23 @@ public class AppController {
 
     @FXML
     public void mostrarInscripcionSocioFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/InscripcionView/mostrarInscripcionSocioFXMLLoader.fxml");
+        // Cargar el archivo FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/mostrarInscripcionSocioFXMLLoader.fxml"));
+        try {
+            Parent root = loader.load();
+            // Establecer el contenido cargado en el centro del BorderPane
+            mainContainer.setCenter(root);
+            // Obtener el controlador del formulario cargado
+            InscripcionController inscripcionController = loader.getController();
+            //Cargamos los socios en la tabla
+            inscripcionController.cargarLosSociosEnTabla();
+            //Cargamos el filtro
+            inscripcionController.filtrarSocioPorNumeroEnTabla();
+            //Funcion para cargar inscripciones
+            inscripcionController.obtenerInscripciones();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
