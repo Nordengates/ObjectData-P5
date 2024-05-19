@@ -28,7 +28,7 @@
          </font>
       </Label>
       <TextField fx:id="tfNumExc" layoutX="89.0" layoutY="255.0" prefHeight="25.0" prefWidth="101.0" text="" />
-      <Button fx:id="btCrear" layoutX="83.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleCrearInscripcion" prefHeight="25.0" prefWidth="140.0" text="Crear inscripción" />
+      <Button fx:id="btBoton" layoutX="83.0" layoutY="353.0" mnemonicParsing="false" onAction="#handleCrearInscripcion" prefHeight="25.0" prefWidth="140.0" text="Crear inscripción" />
       <Text fx:id="tInfo" fill="RED" layoutX="69.0" layoutY="95.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CARGANDO DATOS ..." underline="true" wrappingWidth="359.13671875">
          <font>
             <Font name="System Bold" size="16.0" />

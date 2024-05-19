@@ -26,7 +26,7 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <Button fx:id="btCrear" layoutX="549.0" layoutY="417.0" mnemonicParsing="false" onAction="#crearSocioEstandar" prefHeight="25.0" prefWidth="105.0" text="Crear" />
+      <Button fx:id="btBoton" layoutX="549.0" layoutY="417.0" mnemonicParsing="false" onAction="#crearSocioEstandar" prefHeight="25.0" prefWidth="105.0" text="Crear" />
       <ChoiceBox fx:id="cbTipoSeguro" layoutX="112.0" layoutY="228.0" prefHeight="25.0" prefWidth="258.0" />
    </children>
 </AnchorPane>

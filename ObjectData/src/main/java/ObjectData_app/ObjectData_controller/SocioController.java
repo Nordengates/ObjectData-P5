@@ -80,7 +80,17 @@ public class SocioController {
     private TableColumn<Object, Integer> colNumeroSocio;
     @FXML
     private TableColumn<Object, String> colNombre;
-    // FIN
+    // Tabla de socios estandar en modificar seguro
+    @FXML
+    private TableView<Object> taSocioEstandar;
+    @FXML
+    private TableColumn<Object, String> taNumeroSocioEstandar;
+    @FXML
+    private TableColumn<Object, String> taNombreEstandar;
+    @FXML
+    private TableColumn<Object, String> taSeguroEstandar;
+    @FXML
+    private FilteredList<Object> filteredDataEstandar;
 
     // Componentes de 'Socio Federado'
     @FXML
@@ -88,7 +98,7 @@ public class SocioController {
     @FXML
     private TextField tfDniSocioFederado;
     @FXML
-    private Button btCrearSocioFederado;
+    private Button btBoton;
     @FXML
     private ComboBox<String> cbFederaciones;
 
@@ -150,8 +160,6 @@ public class SocioController {
     private TextField tfDniSocioEstandar;
     @FXML
     private ChoiceBox<String> cbTipoSeguro;
-    @FXML
-    private Button btCrear;
 
     // Método para generar un número de socio aleatorio
     public static int generarID() {
@@ -199,56 +207,53 @@ public class SocioController {
         } while (!todoOk);
     }
 
+    @FXML
     public void modificarSeguroSocioEstandar() {
         // Atributos
-        String nombre = tfNombreSocioEstandar.getText();
-        String NIF = tfDniSocioEstandar.getText();
+
         String tipoSeguroSeleccionado = cbTipoSeguro.getValue();
 
+        // Verifica si los campos están completos
         if (nombre.isEmpty() || NIF.isEmpty() || tipoSeguroSeleccionado == null) {
-            NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, completa todos los campos.");
+            NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, complete todos los campos.");
             return;
         }
-        int numeroSocio;
-        boolean todoOk = false;
-        // Imprimitos el titulo de la función.
-        // RespView.tituloDeLaFuncion("-- FORMULARIO PARA MODIFICAR EL TIPO DE SEGURO
-        // --");
-        // Bucle de logica para comprobar datos.
-        do {
-            // Pedimos el nombre del socio.
-            retorno = SociView.obtenerNumeroSocio();
-            // Si retorno esta vacio salimos.
-            if (retorno.isEmpty()) {
-                RespView.respuestaControllerView("Operación cancelada.");
-            } else if (retorno.matches("\\d+")) { // Verifica si el retorno es un número entero
-                numeroSocio = Integer.parseInt(retorno);
-                todoOk = true;
-            } else {
-                // Si no es un número entero, muestra un mensaje de error
-                RespView.excepcionesControllerView("El número de socio debe ser un numero.");
-                continue;
-            }
-            // Obtenemos el objeto socio estandar (si existe)
-            try {
-                socio = SocioEstandarModel.getSocioPorNumeroSocio(numeroSocio);
-            } catch (Exception e) {
-                RespView.excepcionesControllerView(e.getMessage());
-            }
+
+        // Obtiene el socio seleccionado de la tabla
+        SocioModel socioSeleccionado = (SocioModel) taTodosLosSocios.getSelectionModel().getSelectedItem();
+
+        // Verificar si se seleccionó un socio
+        if (socioSeleccionado == null) {
+            NotificacionView.Notificacion("WARNING", "Atención",
+                    "Debe seleccionar un socio estandar para llevar a cabo la modificacion.");
+            return;
+        }
+
+        // Intenta encontrar el socio estandar por nº de socio
+        try {
+            SocioEstandarModel socio = SocioEstandarModel.getSocioPorNumeroSocio(socioSeleccionado.getNumeroSocio());
             if (socio != null) {
+                // Intenta actualizar el seguro del socio
                 SeguroModel seguroModel = seguroSocio();
+                if (seguroModel == null) {
+                    NotificacionView.Notificacion("ERROR", "Tipo de Seguro Inválido",
+                            "Por favor, selecciona un tipo de seguro válido.");
+                    return;
+                }
                 try {
                     socio.actualizarSeguroSocioEstandar(seguroModel, socio);
-                    RespView.respuestaControllerView("El socio se ha actualizado correctamente.");
-                    todoOk = true;
+                    NotificacionView.Notificacion("INFORMATION", "Éxito", "El socio se ha actualizado correctamente.");
                 } catch (Exception e) {
-                    RespView.respuestaControllerView(e.getMessage());
+                    NotificacionView.Notificacion("ERROR", "Error en la Actualización",
+                            "Hubo un error al actualizar el socio estándar: " + e.getMessage());
                 }
             } else {
-                RespView.excepcionesControllerView("No se ha podido encontrar el socio.");
-                continue;
+                NotificacionView.Notificacion("ERROR", "Socio No Encontrado", "No se ha podido encontrar el socio.");
             }
-        } while (!todoOk);
+        } catch (Exception e) {
+            NotificacionView.Notificacion("ERROR", "Error en la Búsqueda",
+                    "Error al buscar el socio: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -296,6 +301,85 @@ public class SocioController {
         } catch (Exception e) {
             NotificacionView.Notificacion("ERROR", "Error al crear socio", e.getMessage());
         }
+    }
+
+    public void cargarSociosEstandarEnTabla() {
+        tInfo.setText("Cargando datos ...");
+        //Esta es la funcion del filtro al escribir
+        tfNumeroSocio.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredDataEstandar.setPredicate(socio -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String numeroSocio = String.valueOf(((SocioModel) socio).getNumeroSocio());
+                return numeroSocio.contains(newValue);
+            });
+        });
+        //Al pulsar sobre el socio:
+        taSocioEstandar.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                Integer contenidoCelda = ((SocioModel) newSelection).getNumeroSocio();
+                tfNumeroSocio.setText(contenidoCelda.toString());
+            }
+        });
+        //Inicializar tabla
+        taNumeroSocioEstandar.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof String[]) {
+                String[] values = (String[]) item;
+                return new SimpleStringProperty(values[0]);
+            }
+            return null;
+        });
+        taNombreEstandar.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof String[]) {
+                String[] values = (String[]) item;
+                return new SimpleStringProperty(values[1]);
+            }
+            return null;
+        });
+        taSeguroEstandar.setCellValueFactory(cellData -> {
+            Object item = cellData.getValue();
+            if (item instanceof String[]) {
+                String[] values = (String[]) item;
+                return new SimpleStringProperty(values[2]);
+            }
+            return null;
+        });
+
+        //Carga de datos
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    String[] object = {};
+                    ArrayList<String[]> objectArrayList = new ArrayList<>();
+                    ArrayList<SocioEstandarModel> socioEstandarModel = SocioEstandarModel.obtenerSocios();
+                    for (SocioEstandarModel socio : socioEstandarModel) {
+                        Integer numeroSocio = socio.getNumeroSocio();
+                        String tipoSeguro = socio.getSeguro().getTipo().toString();
+                        object = new String[] {
+                            numeroSocio.toString(),
+                            socio.getNombre(),
+                            tipoSeguro
+                        };
+                        objectArrayList.add(object);
+                    }
+                    taSocioEstandar.setItems(FXCollections.observableArrayList(objectArrayList));
+                    return null;
+                } catch (Exception e) {
+                    Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
+                            "Error en el controlador: " + e.getMessage()));
+                } finally {
+                    Platform.runLater(() -> tInfo.setText(""));
+                }
+                return null;
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     private void cargarFederaciones() {
@@ -409,6 +493,7 @@ public class SocioController {
                         default:
                             throw new Exception("No se ha podido identificar el tipo de socio.");
                     }
+                    cargarLosSociosEnTabla();
                 } catch (Exception e) {
                     mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
                     System.err.println("Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
@@ -463,83 +548,96 @@ public class SocioController {
                             ArrayList<String[]> conceptosArrayList = new ArrayList<>();
                             int numeroSocio = ((SocioModel) newSelection).getNumeroSocio();
                             String tipoSocio = SocioModel.obtenerTipoSocioPorNumeroSocio(numeroSocio);
-                            ArrayList<InscripcionModel> inscripcionesSocioModel = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
+                            ArrayList<InscripcionModel> inscripcionesSocioModel = InscripcionModel
+                                    .obtenerInscripcionesByNumSocio(numeroSocio);
                             Double facturacion = 0.0;
                             final Double cuotaMensual = 10.00;
                             if (tipoSocio.equals("Estandar")) {
-                                //Reseteamos los conceptos
+                                // Reseteamos los conceptos
                                 conceptoStrings = null;
                                 facturacion = 0.0;
-                                //Cuota mensual
-                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€"};
+                                // Cuota mensual
+                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€" };
                                 conceptosArrayList.add(conceptoStrings);
                                 facturacion += cuotaMensual;
-                                //Precio seguro
+                                // Precio seguro
                                 Double precioSeguro = 0.0;
                                 try {
-                                    precioSeguro = SocioEstandarModel.getSocioPorNumeroSocio(numeroSocio).getSeguro().getPrecio();
+                                    precioSeguro = SocioEstandarModel.getSocioPorNumeroSocio(numeroSocio).getSeguro()
+                                            .getPrecio();
                                 } catch (Exception e) {
-                                    NotificacionView.Notificacion("ERROR", "Error encontrado", "Fallo en la ejecución del programa: " + e);
+                                    NotificacionView.Notificacion("ERROR", "Error encontrado",
+                                            "Fallo en la ejecución del programa: " + e);
                                 }
-                                conceptoStrings = new String[] { "Coste seguro", precioSeguro.toString() + "€"};
+                                conceptoStrings = new String[] { "Coste seguro", precioSeguro.toString() + "€" };
                                 conceptosArrayList.add(conceptoStrings);
                                 facturacion += precioSeguro;
-                                //Listado de excursiones inscritas
+                                // Listado de excursiones inscritas
                                 for (InscripcionModel inscripcion : inscripcionesSocioModel) {
-                                    //Obtenemos la excursión
-                                    ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
-                                    //Obtenemos el precio de la excursión
+                                    // Obtenemos la excursión
+                                    ExcursionModel excursion = ExcursionModel
+                                            .obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                    // Obtenemos el precio de la excursión
                                     Double precioExcursion = excursion.getPrecioInscripcion();
-                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(), precioExcursion.toString() + "€" };
+                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(),
+                                            precioExcursion.toString() + "€" };
                                     conceptosArrayList.add(conceptoStrings);
                                     facturacion += precioExcursion;
                                 }
                                 tTotal.setText("Total facturado: " + facturacion + "€");
                                 taResultadoFacturacion.setItems(FXCollections.observableArrayList(conceptosArrayList));
                             } else if (tipoSocio.equals("Federado")) {
-                                //Reseteamos los conceptos
+                                // Reseteamos los conceptos
                                 conceptoStrings = null;
                                 facturacion = 0.0;
                                 // Aplicamos un despues de la cuota mensual 5%
-                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€"};
+                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€" };
                                 conceptosArrayList.add(conceptoStrings);
                                 Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 95 / 100);
-                                conceptoStrings = new String[] { "  Desc. cuota mensual 5%", "-" + precioCuotaDescuento.toString() + "€"};
-                                conceptosArrayList.add(conceptoStrings); 
+                                conceptoStrings = new String[] { "  Desc. cuota mensual 5%",
+                                        "-" + precioCuotaDescuento.toString() + "€" };
+                                conceptosArrayList.add(conceptoStrings);
                                 facturacion += cuotaMensual - precioCuotaDescuento;
-                                //Listado de excursiones inscritas
+                                // Listado de excursiones inscritas
                                 for (InscripcionModel inscripcion : inscripcionesSocioModel) {
-                                    //Obtenemos la excursión
-                                    ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
-                                    //Obtenemos el precio de la excursión
+                                    // Obtenemos la excursión
+                                    ExcursionModel excursion = ExcursionModel
+                                            .obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                    // Obtenemos el precio de la excursión
                                     Double precioExcursion = excursion.getPrecioInscripcion();
-                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(), precioExcursion.toString() + "€" };
+                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(),
+                                            precioExcursion.toString() + "€" };
                                     conceptosArrayList.add(conceptoStrings);
-                                    Double descuentoExcursiones = Math.round((precioExcursion - (precioExcursion * 90 / 100)) * 10.0) / 10.0;
-                                    conceptoStrings = new String[] { "  Desc. excursión 10%", "-" + descuentoExcursiones.toString() + "€" };
+                                    Double descuentoExcursiones = Math
+                                            .round((precioExcursion - (precioExcursion * 90 / 100)) * 10.0) / 10.0;
+                                    conceptoStrings = new String[] { "  Desc. excursión 10%",
+                                            "-" + descuentoExcursiones.toString() + "€" };
                                     conceptosArrayList.add(conceptoStrings);
                                     facturacion += precioExcursion - descuentoExcursiones;
                                 }
                                 tTotal.setText("Total facturado: " + facturacion + "€");
                                 taResultadoFacturacion.setItems(FXCollections.observableArrayList(conceptosArrayList));
                             } else if (tipoSocio.equals("Infantil")) {
-                                //Reseteamos los conceptos
+                                // Reseteamos los conceptos
                                 conceptoStrings = null;
                                 facturacion = 0.0;
                                 // Aplicamos un despues de la cuota mensual 5%
-                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€"};
+                                conceptoStrings = new String[] { "Cuota mensual", cuotaMensual.toString() + "€" };
                                 conceptosArrayList.add(conceptoStrings);
                                 Double precioCuotaDescuento = cuotaMensual - (cuotaMensual * 50 / 100);
-                                conceptoStrings = new String[] { "  Desc. cuota mensual 50%", "-" + precioCuotaDescuento.toString() + "€"};
-                                conceptosArrayList.add(conceptoStrings); 
+                                conceptoStrings = new String[] { "  Desc. cuota mensual 50%",
+                                        "-" + precioCuotaDescuento.toString() + "€" };
+                                conceptosArrayList.add(conceptoStrings);
                                 facturacion += cuotaMensual - precioCuotaDescuento;
-                                //Listado de excursiones inscritas
+                                // Listado de excursiones inscritas
                                 for (InscripcionModel inscripcion : inscripcionesSocioModel) {
-                                    //Obtenemos la excursión
-                                    ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
-                                    //Obtenemos el precio de la excursión
+                                    // Obtenemos la excursión
+                                    ExcursionModel excursion = ExcursionModel
+                                            .obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                    // Obtenemos el precio de la excursión
                                     Double precioExcursion = excursion.getPrecioInscripcion();
-                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(), precioExcursion.toString() + "€" };
+                                    conceptoStrings = new String[] { "Excursion a " + excursion.getDescripcion(),
+                                            precioExcursion.toString() + "€" };
                                     conceptosArrayList.add(conceptoStrings);
                                     facturacion += precioExcursion;
                                 }

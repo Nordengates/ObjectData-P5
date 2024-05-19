@@ -40,6 +40,6 @@
          </font>
       </Label>
       <TextField fx:id="tfPrecioInscripcion" layoutX="150.0" layoutY="334.0" prefHeight="25.0" prefWidth="98.0" />
-      <Button fx:id="btCrear" layoutX="292.0" layoutY="423.0" mnemonicParsing="false" onAction="#crearExcursion" prefHeight="25.0" prefWidth="140.0" text="Crear excursión" />
+      <Button fx:id="btBoton" layoutX="292.0" layoutY="423.0" mnemonicParsing="false" onAction="#crearExcursion" prefHeight="25.0" prefWidth="140.0" text="Crear excursión" />
    </children>
 </AnchorPane>

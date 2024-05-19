@@ -39,6 +39,6 @@
          </font>
       </Text>
       <TextField fx:id="tfNombreSocioInfantil" layoutX="554.0" layoutY="48.0" prefHeight="25.0" prefWidth="143.0" />
-      <Button fx:id="btCrearSocioInfantil" onAction="#crearSocioInfantil" layoutX="326.0" layoutY="432.0" mnemonicParsing="false" text="Crear" />
+      <Button fx:id="btBotonSocioInfantil" onAction="#crearSocioInfantil" layoutX="326.0" layoutY="432.0" mnemonicParsing="false" text="Crear" />
    </children>
 </AnchorPane>
