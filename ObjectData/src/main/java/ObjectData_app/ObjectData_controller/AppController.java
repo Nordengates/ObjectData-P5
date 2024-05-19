@@ -207,9 +207,8 @@ public class AppController {
 
     @FXML
     public void eliminarInscripcionFXMLLoader() {
-        FXMLLoader("/ObjectData_app/ObjectData_view/InscripcionView/eliminarInscripcionFXMLLoader.fxml");
         // Cargar el archivo FXML
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/mostrarInscripcionSocioFXMLLoader.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ObjectData_app/ObjectData_view/InscripcionView/eliminarInscripcionFXMLLoader.fxml"));
         try {
             Parent root = loader.load();
             // Establecer el contenido cargado en el centro del BorderPane
@@ -222,10 +221,11 @@ public class AppController {
             inscripcionController.filtrarSocioPorNumeroEnTabla();
             //Funcion para cargar inscripciones
             inscripcionController.obtenerInscripciones();
+            //Funcion para eliminar inscripcion
+            inscripcionController.actionEliminarInscripcion();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        actionEliminarInscripcion();
     }
 
     // Estos metodos cargan los FXML cuyo controlador es ExcursionController

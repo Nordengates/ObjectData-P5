@@ -449,14 +449,6 @@ public class SocioController {
         }
     }
 
-    private void mostrarAvisoEliminacion(String warning) {
-        tInfo.setText(warning);
-    }
-
-    private void limpiarAvisoEliminacion() {
-        tInfo.setText("");
-    }
-
     @FXML
     public void accionEliminarSocio() {
         taTodosLosSocios.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -467,9 +459,9 @@ public class SocioController {
                 // Eliminar el socio según su tipo
                 try {
                     inscritoEnExcursion = InscripcionModel.comprobarSocioInscrito(numeroSocio);
-                    if (!inscritoEnExcursion) {
+                    if (inscritoEnExcursion) {
                     // Mostrar mensaje de que el socio está inscrito en una excursión y no puede ser eliminado
-                        NotificacionView.Notificacion("Warning", "Usuario con inscripciones", "Este usuario tiene inscripciones y no se puede eliminar");
+                        NotificacionView.Notificacion("Warning", "Usuario con inscripciones", "Este usuario tiene inscripciones y no se puede eliminar, el socio esta inscrito a alguna excursión.");
                         return;
                     }
                     Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
@@ -495,8 +487,7 @@ public class SocioController {
                     }
                     cargarLosSociosEnTabla();
                 } catch (Exception e) {
-                    mostrarAvisoEliminacion("Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
-                    System.err.println("Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
+                    NotificacionView.Notificacion("ERror", "Error en el controlador", "Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
                 }
             }
         });

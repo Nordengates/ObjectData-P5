@@ -29,17 +29,17 @@
       <DatePicker fx:id="tfFechaInicioinscripcion" layoutX="114.0" layoutY="88.0" />
       <DatePicker fx:id="tfFechaFinInscripcion" layoutX="318.0" layoutY="88.0" />
       <Text fx:id="tInfo" fill="RED" layoutX="508.0" layoutY="117.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="181.13671875" />
-      <Button fx:id="bnBuscarMostrarInscripcion" onAction="#mostrarInscripcionPorFecha" layoutX="549.0" layoutY="71.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Buscar">
+      <Button fx:id="bnBuscarMostrarInscripcion" layoutX="549.0" layoutY="71.0" mnemonicParsing="false" onAction="#mostrarInscripcionPorFecha" prefHeight="25.0" prefWidth="100.0" text="Buscar">
          <font>
             <Font size="13.0" />
          </font>
       </Button>
       <TableView fx:id="taResultadoInscripcion" layoutX="7.0" layoutY="130.0" prefHeight="342.0" prefWidth="707.0">
          <columns>
-            <TableColumn fx:id="taNumeroInscripcion" prefWidth="100.0" text="Núm inscripción" />
-            <TableColumn fx:id="taNumeroExcursion" prefWidth="140.0" text="Num Excursion" />
-            <TableColumn fx:id="taNumeroSocio1" prefWidth="100.0" text="Num Socio" />
-            <TableColumn fx:id="taFecha" prefWidth="120.0" text="Fecha Inscripcion" />
+            <TableColumn fx:id="taNumeroInscripcion" prefWidth="138.0" text="Num inscripción" />
+            <TableColumn fx:id="taNumeroExcursion" prefWidth="151.0" text="Num Excursiún" />
+            <TableColumn fx:id="taNumeroSocio1" prefWidth="180.0" text="Num Socio" />
+            <TableColumn fx:id="taFecha" prefWidth="237.0" text="Fecha Inscripcion" />
          </columns>
       </TableView>
    </children>

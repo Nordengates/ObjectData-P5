@@ -16,7 +16,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -32,6 +35,7 @@ import ObjectData_app.ObjectData_model.ExcursionModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 
 public class InscripcionController {
@@ -67,7 +71,8 @@ public class InscripcionController {
     @FXML
     private TableColumn<Object, String> taFechaExcursion;
 
-    //Declaracion de los ID de la tabla de resultados de inscripción en mostrar por fecha
+    // Declaracion de los ID de la tabla de resultados de inscripción en mostrar por
+    // fecha
     @FXML
     private TableView<InscripcionModel> taResultadoInscripcion;
     @FXML
@@ -78,7 +83,6 @@ public class InscripcionController {
     private TableColumn<InscripcionModel, Integer> taNumeroExcursion;
     @FXML
     private TableColumn<InscripcionModel, Date> taFecha;
-
 
     @FXML
     private Text tInfo;
@@ -166,7 +170,8 @@ public class InscripcionController {
                     ArrayList<ExcursionModel> excursiones = ExcursionModel.obtenerListadoExcursiones();
                     ObservableList<ExcursionModel> observableList = FXCollections.observableArrayList(excursiones);
                     taExcursion.setItems(observableList);
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
                 return null;
             }
         };
@@ -249,16 +254,20 @@ public class InscripcionController {
                             String[] listaInscripciones = {};
                             ArrayList<String[]> listaInscripcionesArrayList = new ArrayList<>();
                             int numeroSocio = ((SocioModel) newSelection).getNumeroSocio();
-                            ArrayList<InscripcionModel> inscripcionesSocioModel = InscripcionModel.obtenerInscripcionesByNumSocio(numeroSocio);
+                            ArrayList<InscripcionModel> inscripcionesSocioModel = InscripcionModel
+                                    .obtenerInscripcionesByNumSocio(numeroSocio);
                             for (InscripcionModel inscripcion : inscripcionesSocioModel) {
-                                //Obtenemos la excursión
-                                ExcursionModel excursion = ExcursionModel.obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
+                                // Obtenemos la excursión
+                                ExcursionModel excursion = ExcursionModel
+                                        .obtenerExcursionPorNumeroExcursion(inscripcion.getNumeroExcursion());
                                 Integer numIns = inscripcion.getNumeroInscripcion();
                                 Date fecha = excursion.getFecha();
-                                listaInscripciones = new String[] { numIns.toString(), excursion.getDescripcion(), fecha.toString()};
+                                listaInscripciones = new String[] { numIns.toString(), excursion.getDescripcion(),
+                                        fecha.toString() };
                                 listaInscripcionesArrayList.add(listaInscripciones);
                             }
-                            taTodasLasInscripciones.setItems(FXCollections.observableArrayList(listaInscripcionesArrayList));
+                            taTodasLasInscripciones
+                                    .setItems(FXCollections.observableArrayList(listaInscripcionesArrayList));
                             return null;
                         } catch (Exception e) {
                             Platform.runLater(() -> NotificacionView.Notificacion("error", "Error en el controlador",
@@ -276,43 +285,32 @@ public class InscripcionController {
         });
     }
 
-    public static void actionEliminarInscripcion() {
-        String listadoInscripciones = "";
-        boolean inscripcionEliminada = false;
-
-        // try {
-        // listadoInscripciones = InscripcionModel.obtenerListadoInscripciones();
-        // } catch (Exception e) {
-        // RespView.excepcionesControllerView(e.getMessage());
-        // }
-        // RespView.respuestaControllerView(listadoInscripciones);
-        // String retorno = InscView.formEliminarInscripcionView(listadoInscripciones);
-        // int num;
-        // Manejar el caso en que el usuario no ingrese un número válido
-        // if (retorno.matches("\\d+")) {
-        // num = Integer.parseInt(retorno);
-        // } else {
-        // RespView.excepcionesControllerView("El número de inscripción ingresado no es
-        // válido.");
-        // return;
-        // }
-
-        // try {
-        // inscripcionEliminada = InscripcionModel.eliminarInscripcionNumero(num);
-        // } catch (Exception e) {
-        // RespView.excepcionesControllerView(e.getMessage());
-        // }
-
-        // if (inscripcionEliminada) {
-        // RespView.respuestaControllerView("La inscripción ha sido eliminada
-        // exitosamente.");
-        // } else {
-        // RespView.excepcionesControllerView(
-        // "No se pudo eliminar la inscripción. Verifique el número de inscripción y
-        // asegúrese de que la fecha de inscripción sea anterior a la fecha de la
-        // excursión.");
-        // }
-
+    public void actionEliminarInscripcion() {
+        taTodasLasInscripciones.getSelectionModel().selectedItemProperty()
+            .addListener((obs, oldSelection, newSelection) -> {
+                if (newSelection != null) {
+                    String[] datos = (String[]) newSelection;
+                    try {
+                        Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+                        alertConfirmation.setTitle("Confirmación de Eliminación");
+                        alertConfirmation.setHeaderText(null);
+                        alertConfirmation.setContentText(
+                                "¿Estás seguro de que deseas eliminar la inscripción con número: "
+                                        + datos[0] + "?");
+                        Optional<ButtonType> result = alertConfirmation.showAndWait();
+                        if (result.isPresent() && result.get() != ButtonType.OK) {
+                            return;
+                        }
+                        InscripcionModel.eliminarInscripcionNumero(Integer.parseInt(datos[0]));
+                        NotificacionView.Notificacion("INFORMATION", "Inscripción eliminada",
+                                "La inscripción se a eliminado con exito!!");                        
+                        obtenerInscripciones();
+                    } catch (Exception e) {
+                        NotificacionView.Notificacion("Error", "Error en el controlador",
+                                "Ha ocurido un error en la elimicación. Causa:" + e.getMessage());
+                    }
+                }
+            });
     }
 
     public void mostrarInscripcionPorFecha() {
@@ -323,12 +321,14 @@ public class InscripcionController {
             fechaInicio = java.sql.Date.valueOf(tfFechaInicioinscripcion.getValue());
             fechaFin = java.sql.Date.valueOf(tfFechaFinInscripcion.getValue());
         } catch (Exception e) {
-            NotificacionView.Notificacion("ERROR", "Error al obtener las fechas de filtrado", "Ha ocurrido un problema al intentar obtener las fechas de filtrado.");
+            NotificacionView.Notificacion("ERROR", "Error al obtener las fechas de filtrado",
+                    "Ha ocurrido un problema al intentar obtener las fechas de filtrado.");
             return;
         }
 
         if (fechaInicio.after(fechaFin)) {
-            NotificacionView.Notificacion("ERROR", "La fecha de inicio debe ser anterior a la fecha de fin.", "Ha ocurrido un problema al intentar obtener las fechas de filtrado.");
+            NotificacionView.Notificacion("ERROR", "La fecha de inicio debe ser anterior a la fecha de fin.",
+                    "Ha ocurrido un problema al intentar obtener las fechas de filtrado.");
             return;
         }
 
@@ -336,30 +336,32 @@ public class InscripcionController {
         taNumeroSocio1.setCellValueFactory(new PropertyValueFactory<>("numeroSocio"));
         taNumeroExcursion.setCellValueFactory(new PropertyValueFactory<>("numeroExcursion"));
         taFecha.setCellValueFactory(new PropertyValueFactory<>("fechaInscripcion"));
-        taResultadoInscripcion.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                Integer contenidoCelda = newSelection.getNumeroExcursion();
-                final Clipboard clipboard = Clipboard.getSystemClipboard();
-                final ClipboardContent content = new ClipboardContent();
-                content.putString(contenidoCelda.toString());
-                clipboard.setContent(content);
-                NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles","Se copio al portapapeles el número de excursión: " + contenidoCelda);
-            }
-        });
+        taResultadoInscripcion.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldSelection, newSelection) -> {
+                    if (newSelection != null) {
+                        Integer contenidoCelda = newSelection.getNumeroExcursion();
+                        final Clipboard clipboard = Clipboard.getSystemClipboard();
+                        final ClipboardContent content = new ClipboardContent();
+                        content.putString(contenidoCelda.toString());
+                        clipboard.setContent(content);
+                        NotificacionView.Notificacion("INFORMATION", "Copiado al portapapeles",
+                                "Se copio al portapapeles el número de excursión: " + contenidoCelda);
+                    }
+                });
         // Supongamos que tienes dos variables para almacenar las fechas seleccionadas
-        
-    // Verificar si las fechas seleccionadas no son nulas
-    if (fechaInicio != null && fechaFin != null) {
-        // Supongamos que listarInscripcionesFecha retorna una lista de inscripciones
-        ArrayList<InscripcionModel> inscripciones = InscripcionModel.objetoListaInscripcion(fechaInicio, fechaFin);
-        
-        // Convertir la lista a un ObservableList si es necesario
-        ObservableList<InscripcionModel> observableInscripciones = FXCollections.observableArrayList(inscripciones);
-        
-        // Establecer los items de la tabla
-        taResultadoInscripcion.setItems(observableInscripciones);
+
+        // Verificar si las fechas seleccionadas no son nulas
+        if (fechaInicio != null && fechaFin != null) {
+            // Supongamos que listarInscripcionesFecha retorna una lista de inscripciones
+            ArrayList<InscripcionModel> inscripciones = InscripcionModel.objetoListaInscripcion(fechaInicio, fechaFin);
+
+            // Convertir la lista a un ObservableList si es necesario
+            ObservableList<InscripcionModel> observableInscripciones = FXCollections.observableArrayList(inscripciones);
+
+            // Establecer los items de la tabla
+            taResultadoInscripcion.setItems(observableInscripciones);
+        }
     }
-}
 
     // Este metodo permite filtrar usuarios en la tabla usando un TextField con
     // fx:id
