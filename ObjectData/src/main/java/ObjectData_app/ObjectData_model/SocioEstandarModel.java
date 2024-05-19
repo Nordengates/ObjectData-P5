@@ -96,7 +96,7 @@ public class SocioEstandarModel extends SocioModel {
     }
 
     /////////////////// Metodo para actualizar el seguro del socio:
-    public void actualizarSeguroSocioEstandar(SeguroModel seguro, SocioEstandarModel socio) {
+    public static void actualizarSeguroSocioEstandar(String tipoSeguro, int numeroSocio) {
         // Creamos una sesión de Hibernate y la iniciamos
         crearSessionHib();
         try {
@@ -106,8 +106,8 @@ public class SocioEstandarModel extends SocioModel {
             // en la base de datos,
             // pasando el tipo de seguro y el número de socio como parámetros
             session.createMutationQuery("UPDATE SocioEstandarHib SET seguro = :seguro WHERE numeroSocio = :numeroSocio")
-                    .setParameter("seguro", seguro.getTipo().toString())
-                    .setParameter("numeroSocio", socio.getNumeroSocio())
+                    .setParameter("seguro", tipoSeguro)
+                    .setParameter("numeroSocio", numeroSocio)
                     .executeUpdate();
             // Confirmamos la transacción
             session.getTransaction().commit();

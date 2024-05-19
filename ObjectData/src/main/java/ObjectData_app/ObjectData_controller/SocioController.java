@@ -210,50 +210,50 @@ public class SocioController {
     @FXML
     public void modificarSeguroSocioEstandar() {
         // Atributos
-
         String tipoSeguroSeleccionado = cbTipoSeguro.getValue();
+        String numeroSocioString = tfNumeroSocio.getText();
 
         // Verifica si los campos están completos
-        if (nombre.isEmpty() || NIF.isEmpty() || tipoSeguroSeleccionado == null) {
+        if (numeroSocioString.isEmpty() || tipoSeguroSeleccionado == null) {
             NotificacionView.Notificacion("WARNING", "Campos Vacíos", "Por favor, complete todos los campos.");
             return;
         }
 
-        // Obtiene el socio seleccionado de la tabla
-        SocioModel socioSeleccionado = (SocioModel) taTodosLosSocios.getSelectionModel().getSelectedItem();
+        //Verificamos si el numeroSocio es un numero
+        if(!numeroSocioString.matches("\\d+")){
+            NotificacionView.Notificacion("WARNING", "Campos invalidos", "Comprueba los campos, número socio debe ser un numero entero.");
+            return;
+        }
+        int numeroSocio = Integer.parseInt(numeroSocioString);
 
-        // Verificar si se seleccionó un socio
-        if (socioSeleccionado == null) {
-            NotificacionView.Notificacion("WARNING", "Atención",
-                    "Debe seleccionar un socio estandar para llevar a cabo la modificacion.");
+        //Verificamos el tipo de seguro:
+        if (tipoSeguroSeleccionado.startsWith("1")) {
+            tipoSeguroSeleccionado = "BASICO";
+        } else if (tipoSeguroSeleccionado.startsWith("2")) {
+            tipoSeguroSeleccionado = "COMPLETO";
+        }
+
+        //Verificamos si el socio existe
+        if(!SocioModel.comprobarSocioPorNumeroSocio(numeroSocio)){
+            NotificacionView.Notificacion("WARNING", "Socio no existe", "Número de socio insertado no existe!!");
             return;
         }
 
-        // Intenta encontrar el socio estandar por nº de socio
-        try {
-            SocioEstandarModel socio = SocioEstandarModel.getSocioPorNumeroSocio(socioSeleccionado.getNumeroSocio());
-            if (socio != null) {
-                // Intenta actualizar el seguro del socio
-                SeguroModel seguroModel = seguroSocio();
-                if (seguroModel == null) {
-                    NotificacionView.Notificacion("ERROR", "Tipo de Seguro Inválido",
-                            "Por favor, selecciona un tipo de seguro válido.");
-                    return;
-                }
-                try {
-                    socio.actualizarSeguroSocioEstandar(seguroModel, socio);
-                    NotificacionView.Notificacion("INFORMATION", "Éxito", "El socio se ha actualizado correctamente.");
-                } catch (Exception e) {
-                    NotificacionView.Notificacion("ERROR", "Error en la Actualización",
-                            "Hubo un error al actualizar el socio estándar: " + e.getMessage());
-                }
-            } else {
-                NotificacionView.Notificacion("ERROR", "Socio No Encontrado", "No se ha podido encontrar el socio.");
-            }
-        } catch (Exception e) {
-            NotificacionView.Notificacion("ERROR", "Error en la Búsqueda",
-                    "Error al buscar el socio: " + e.getMessage());
+        //Si existe:
+        Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Confirmación de modificación");
+        alertConfirmation.setHeaderText(null);
+        alertConfirmation.setContentText("¿Estas seguro de que quieres modificar el seguro del socio: " + numeroSocio + "?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if (result.isPresent() && result.get() != ButtonType.OK) {
+            return;
         }
+        //Despues de confirmar, se modifica.
+        SocioEstandarModel.actualizarSeguroSocioEstandar(tipoSeguroSeleccionado,numeroSocio);
+        NotificacionView.Notificacion("Information", "Socio modificado", "Se ha modificado el seguro del socio: " + numeroSocio);
+
+        //Se recargan los datos:
+        cargarSociosEstandarEnTabla();
     }
 
     @FXML
@@ -305,21 +305,11 @@ public class SocioController {
 
     public void cargarSociosEstandarEnTabla() {
         tInfo.setText("Cargando datos ...");
-        //Esta es la funcion del filtro al escribir
-        tfNumeroSocio.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredDataEstandar.setPredicate(socio -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-                String numeroSocio = String.valueOf(((SocioModel) socio).getNumeroSocio());
-                return numeroSocio.contains(newValue);
-            });
-        });
         //Al pulsar sobre el socio:
         taSocioEstandar.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                Integer contenidoCelda = ((SocioModel) newSelection).getNumeroSocio();
-                tfNumeroSocio.setText(contenidoCelda.toString());
+                String[] datos = (String[]) newSelection;
+                tfNumeroSocio.setText(datos[0]);
             }
         });
         //Inicializar tabla
